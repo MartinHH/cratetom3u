@@ -20,7 +20,7 @@ object Main {
       opt[String](name = "output", short = 'o', descr = "path to output .m3u file", required = true)
 
     val remove: ScallopOption[String] =
-      opt[String](name = "remove", short = 'r', descr = "audio files path substring to remove (supports regex)")
+      opt[String](name = "remove", short = 'r', descr = "audio file paths substring to remove (supports regex)")
     val add: ScallopOption[String] =
       opt[String](name = "add", short = 'a', descr = "audio file paths substring to prepend")
 
