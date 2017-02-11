@@ -10,25 +10,42 @@ import scala.util.{Failure, Success, Try}
 object CrateToM3U {
 
   val ApplicationName = "CrateToM3U"
+  val Version = "0.1.0"
 
   private val DefaultCharset = "UTF-16"
 
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList) {
 
+    version(s"$ApplicationName $Version")
+
+    banner(
+      s"""$ApplicationName is a tool to convert Serato .crate files to .m3u playlist files.
+        |(Please note that "smart crates" are not supported.)
+        |
+        |Options:
+        |""".stripMargin
+    )
+
     mainOptions = Seq(inputPath, outputPath)
 
+    private def descr(descr: String, isMandatory: Boolean = false): String =
+      s"$descr (${if (isMandatory) "required" else "optional"})"
+
     val inputPath: ScallopOption[String] =
-      opt[String](name = "input", short = 'i', descr = "path to input .crate file", required = true)
+      opt[String](name = "input", short = 'i', descr = descr("path to input .crate file", isMandatory = true),
+        required = true)
     val outputPath: ScallopOption[String] =
-      opt[String](name = "output", short = 'o', descr = "path to output .m3u file", required = true)
+      opt[String](name = "output", short = 'o', descr = descr("path to output .m3u file", isMandatory = true),
+        required = true)
 
     val remove: ScallopOption[String] =
-      opt[String](name = "remove", short = 'r', descr = "audio file paths substring to remove (supports regex)")
+      opt[String](name = "remove", short = 'r', descr = descr("audio file paths substring to remove (supports regex)"))
     val add: ScallopOption[String] =
-      opt[String](name = "add", short = 'a', descr = "audio file paths substring to prepend")
+      opt[String](name = "add", short = 'a', descr = descr("audio file paths substring to prepend"))
     private val _charSet: ScallopOption[String] =
-      opt[String](name = "charset", short = 'c', descr = s"charset for the output file (default is $DefaultCharset)")
+      opt[String](name = "charset", short = 'c', descr = descr(s"charset for the output file (default is " +
+        s"$DefaultCharset)"))
 
     def charset: String = _charSet.toOption.getOrElse(DefaultCharset)
 
@@ -42,7 +59,7 @@ object CrateToM3U {
   /** If no audio tracks were found in input, something is probably wrong. */
   private def requireNonEmptyFileSize(audioFilePaths: Traversable[String]): Try[Int] = {
     val size = audioFilePaths.size
-    if(size <= 0) Failure(EmptyAudioFileList) else Success(size)
+    if (size <= 0) Failure(EmptyAudioFileList) else Success(size)
   }
 
   private def resultString(result: Try[(Int, Boolean)], conf: Conf): String = result match {
