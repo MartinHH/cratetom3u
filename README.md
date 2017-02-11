@@ -33,7 +33,7 @@ Options:
 So a basic example would be this:
 
 ```
-yMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u
+MyMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u
 [CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
 ```
 
@@ -42,7 +42,7 @@ a leading `/` in front of the root directory, you might need to prepend
 the missing `/` using the `-a` option:
 
 ```
-yMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u -a /
+MyMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u -a /
 [CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
 ```
 
