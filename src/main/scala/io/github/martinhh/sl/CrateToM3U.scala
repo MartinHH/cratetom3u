@@ -66,7 +66,7 @@ object CrateToM3U {
 
   private def resultString(result: Try[(Int, Boolean)], conf: Conf): String = result match {
     case Success((x, false)) =>
-      s"Wrote $x-track m3u file to ${conf.outputPath()}"
+      s"Wrote $x tracks to ${conf.outputPath()}"
     case Success((x, true)) =>
       s"Error: found $x tracks, but there was an error writing to ${conf.outputPath()}"
     case Failure(EmptyAudioFileList) =>
