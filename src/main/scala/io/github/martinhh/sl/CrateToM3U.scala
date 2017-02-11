@@ -30,7 +30,7 @@ object CrateToM3U {
     mainOptions = Seq(inputPath, outputPath)
 
     private def descr(descr: String, isMandatory: Boolean = false): String =
-      s"$descr (${if (isMandatory) "required" else "optional"})"
+      s"$descr${if (isMandatory) " (required)" else ""}"
 
     val inputPath: ScallopOption[String] =
       opt[String](name = "input", short = 'i', descr = descr("path to input .crate file", isMandatory = true),
