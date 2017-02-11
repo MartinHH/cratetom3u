@@ -32,6 +32,19 @@ Options:
 So a basic example would be this:
 
 ```
-MyMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u
+yMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u
 [CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
 ```
+
+However, since the audio file paths in `.crate` files are stored without
+a leading `/` in front of the root directory, you might need to prepend
+the missing `/` using the `-a` option:
+
+```
+yMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u -a /
+[CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
+```
+
+On a Mac with Serato installed to its default location, the above
+command should create a working `m3u` file that can be used with VLC,
+Itunes etc.
