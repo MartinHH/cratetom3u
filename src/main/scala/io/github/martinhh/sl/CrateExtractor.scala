@@ -10,6 +10,8 @@ import java.nio.file.{Files, Paths}
 object CrateExtractor {
 
   // start of a audio file path is marked by these 4 bytes + 4 subsequent bytes:
+  // TODO 0.2.0: the 4 subsequent bytes appear to contain the length of the audio
+  // file path. That should be used to make crate-file-parsing more efficient.
   private val StartMarker: Array[Byte] = "ptrk".map(_.toByte).toArray
   private val StartMarkerAdditionalOffset = 4
   private val StartMarkerFullLength = StartMarker.length + StartMarkerAdditionalOffset
@@ -35,7 +37,7 @@ object CrateExtractor {
 
       // search for a startMarker:
       if(hasEqualBytesAt(i, bytesOfFile, StartMarker)) {
-        // skip marker_
+        // skip marker
         i += StartMarkerFullLength
 
         // copy subsequent bytes until end of file or until endMarker:

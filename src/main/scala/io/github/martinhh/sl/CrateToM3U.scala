@@ -9,6 +9,7 @@ import scala.util.{Failure, Success, Try}
 
 object CrateToM3U {
 
+  // TODO 0.2.0(?): get these from build.sbt
   val ApplicationName = "CrateToM3U"
   val Version = "0.1.0"
 
