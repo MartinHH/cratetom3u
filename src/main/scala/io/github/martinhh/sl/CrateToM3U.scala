@@ -13,8 +13,6 @@ object CrateToM3U {
   val ApplicationName = "CrateToM3U"
   val Version = "0.1.0"
 
-  private val DefaultCharset = "UTF-16"
-
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList) {
 
@@ -46,11 +44,9 @@ object CrateToM3U {
       createOpt[String](name = "remove", short = 'r', descr = "audio file paths substring to remove (supports regex)")
     val add: ScallopOption[String] =
       createOpt[String](name = "add", short = 'a', descr = "audio file paths substring to prepend")
-    private val _charSet: ScallopOption[String] =
-      createOpt[String](name = "charset", short = 'c', descr = s"charset for the output file (default is " +
-        s"$DefaultCharset)")
-
-    def charset: String = _charSet.toOption.getOrElse(DefaultCharset)
+    val charSet: ScallopOption[String] =
+      createOpt[String](name = "charset", short = 'c', descr = s"charset for the output file (default is your system's" +
+        s" default)")
 
     printedName = ApplicationName
 
@@ -72,21 +68,23 @@ object CrateToM3U {
       s"Error: found $x tracks, but there was an error writing to ${conf.outputPath()}"
     case Failure(EmptyAudioFileList) =>
       s"Error: no tracks found. Are you sure ${conf.inputPath()} is a valid .crate file?"
-    case Failure(e: UnsupportedEncodingException) =>
-      s"Error: unsupported charset: ${conf.charset}"
+    case Failure(e: UnsupportedEncodingException) if conf.charSet.isDefined =>
+      s"Error: unsupported charset: ${conf.charSet()}"
     case Failure(e) => s"Error: $e"
   }
 
   def main(args: Array[String]): Unit = {
-    import CrateExtractor.audioFilePathsFromCrateFile
-    import M3UBuilder.writeToFile
 
     val conf = Conf(args)
 
+    def writeM3U(audioPaths: Traversable[String]): Boolean =
+      M3UBuilder.writeToFile(conf.outputPath(), audioPaths, conf.remove.toOption, conf.add.toOption,
+        conf.charSet.toOption)
+
     val result = for {
-      audioPaths <- Try(audioFilePathsFromCrateFile(conf.inputPath()))
+      audioPaths <- Try(CrateExtractor.audioFilePathsFromCrateFile(conf.inputPath()))
       nFiles <- requireNonEmptyFileSize(audioPaths)
-      hasError <- Try(writeToFile(conf.outputPath(), audioPaths, conf.remove.toOption, conf.add.toOption, conf.charset))
+      hasError <- Try(writeM3U(audioPaths))
     } yield (nFiles, hasError)
 
     println(s"[$ApplicationName]: ${resultString(result, conf)}")

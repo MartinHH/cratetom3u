@@ -23,7 +23,8 @@ Options:
   -o, --output  <arg>    path to output .m3u file (required)
 
   -a, --add  <arg>       audio file paths substring to prepend
-  -c, --charset  <arg>   charset for the output file (default is UTF-16)
+  -c, --charset  <arg>   charset for the output file (default is your system's
+                         default)
   -r, --remove  <arg>    audio file paths substring to remove (supports regex)
       --help             Show help message
       --version          Show version of this program
