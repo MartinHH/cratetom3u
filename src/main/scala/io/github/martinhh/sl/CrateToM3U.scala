@@ -2,7 +2,7 @@ package io.github.martinhh.sl
 
 import java.io.UnsupportedEncodingException
 
-import org.rogach.scallop.{ScallopConf, ScallopOption}
+import org.rogach.scallop.{ScallopConf, ScallopOption, ValueConverter}
 
 import scala.util.{Failure, Success, Try}
 
@@ -29,23 +29,25 @@ object CrateToM3U {
 
     mainOptions = Seq(inputPath, outputPath)
 
-    private def descr(descr: String, isMandatory: Boolean = false): String =
-      s"$descr${if (isMandatory) " (required)" else ""}"
+    /** Create [[ScallopOption]] with standard description. */
+    private def createOpt[T: ValueConverter](name: String, short: Char, descr: String,
+                                             required: Boolean = false): ScallopOption[T] = {
+      val fullDescr = s"$descr${if (required) " (required)" else ""}"
+      opt[T](name = name, short = short, descr = fullDescr, required = required)
+    }
 
     val inputPath: ScallopOption[String] =
-      opt[String](name = "input", short = 'i', descr = descr("path to input .crate file", isMandatory = true),
-        required = true)
+      createOpt[String](name = "input", short = 'i', descr = "path to input .crate file", required = true)
     val outputPath: ScallopOption[String] =
-      opt[String](name = "output", short = 'o', descr = descr("path to output .m3u file", isMandatory = true),
-        required = true)
+      createOpt[String](name = "output", short = 'o', descr = "path to output .m3u file", required = true)
 
     val remove: ScallopOption[String] =
-      opt[String](name = "remove", short = 'r', descr = descr("audio file paths substring to remove (supports regex)"))
+      createOpt[String](name = "remove", short = 'r', descr = "audio file paths substring to remove (supports regex)")
     val add: ScallopOption[String] =
-      opt[String](name = "add", short = 'a', descr = descr("audio file paths substring to prepend"))
+      createOpt[String](name = "add", short = 'a', descr = "audio file paths substring to prepend")
     private val _charSet: ScallopOption[String] =
-      opt[String](name = "charset", short = 'c', descr = descr(s"charset for the output file (default is " +
-        s"$DefaultCharset)"))
+      createOpt[String](name = "charset", short = 'c', descr = s"charset for the output file (default is " +
+        s"$DefaultCharset)")
 
     def charset: String = _charSet.toOption.getOrElse(DefaultCharset)
 
