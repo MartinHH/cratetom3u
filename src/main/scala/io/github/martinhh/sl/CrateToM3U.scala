@@ -7,7 +7,7 @@ import org.rogach.scallop.{ScallopConf, ScallopOption}
 import scala.util.{Failure, Success, Try}
 
 
-object Main {
+object CrateToM3U {
 
   val ApplicationName = "CrateToM3U"
 
