@@ -32,7 +32,7 @@ object CrateToM3U {
     /** Create [[ScallopOption]] with standard description. */
     private def createOpt[T: ValueConverter](name: String, short: Char, descr: String,
                                              required: Boolean = false): ScallopOption[T] = {
-      val fullDescr = s"$descr${if (required) " (required)" else ""}"
+      val fullDescr = if(required) s"$descr (required)" else descr
       opt[T](name = name, short = short, descr = fullDescr, required = required)
     }
 
