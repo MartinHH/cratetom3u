@@ -1,5 +1,7 @@
 package io.github.martinhh.sl
 
+import java.io.UnsupportedEncodingException
+
 import org.rogach.scallop.{ScallopConf, ScallopOption}
 
 import scala.util.{Failure, Success, Try}
@@ -8,6 +10,8 @@ import scala.util.{Failure, Success, Try}
 object Main {
 
   val ApplicationName = "CrateToM3U"
+
+  private val DefaultCharset = "UTF-16"
 
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList) {
@@ -23,6 +27,10 @@ object Main {
       opt[String](name = "remove", short = 'r', descr = "audio file paths substring to remove (supports regex)")
     val add: ScallopOption[String] =
       opt[String](name = "add", short = 'a', descr = "audio file paths substring to prepend")
+    private val _charSet: ScallopOption[String] =
+      opt[String](name = "charset", short = 'c', descr = s"charset for the output file (default is $DefaultCharset)")
+
+    def charset: String = _charSet.toOption.getOrElse(DefaultCharset)
 
     printedName = ApplicationName
 
@@ -37,26 +45,30 @@ object Main {
     if(size <= 0) Failure(EmptyAudioFileList) else Success(size)
   }
 
-  private def resultString(result: Try[(Int, Boolean)], inPath: String, outPath: String): String = result match {
-    case Success((x, false)) => s"Wrote $x-track m3u file to $outPath"
-    case Success((x, true)) => s"Error: found $x tracks, but there was an error writing to $outPath"
-    case Failure(EmptyAudioFileList) => s"Error: no tracks found. Are you sure $inPath is a valid .crate file?"
+  private def resultString(result: Try[(Int, Boolean)], conf: Conf): String = result match {
+    case Success((x, false)) =>
+      s"Wrote $x-track m3u file to ${conf.outputPath()}"
+    case Success((x, true)) =>
+      s"Error: found $x tracks, but there was an error writing to ${conf.outputPath()}"
+    case Failure(EmptyAudioFileList) =>
+      s"Error: no tracks found. Are you sure ${conf.inputPath()} is a valid .crate file?"
+    case Failure(e: UnsupportedEncodingException) =>
+      s"Error: unsupported charset: ${conf.charset}"
     case Failure(e) => s"Error: $e"
   }
 
   def main(args: Array[String]): Unit = {
+    import CrateExtractor.audioFilePathsFromCrateFile
+    import M3UBuilder.writeToFile
+
     val conf = Conf(args)
 
-    val in = conf.inputPath()
-    val out = conf.outputPath()
-
     val result = for {
-      audioFilePaths <- Try(CrateExtractor.audioFilePathsFromCrateFile(in))
-      nFiles <- requireNonEmptyFileSize(audioFilePaths)
-      hasError <- Try(M3UBuilder.writeToFile(out, audioFilePaths, conf.remove.toOption, conf.add.toOption))
+      audioPaths <- Try(audioFilePathsFromCrateFile(conf.inputPath()))
+      nFiles <- requireNonEmptyFileSize(audioPaths)
+      hasError <- Try(writeToFile(conf.outputPath(), audioPaths, conf.remove.toOption, conf.add.toOption, conf.charset))
     } yield (nFiles, hasError)
 
-    println(s"[$ApplicationName]: ${resultString(result, in, out)}")
-
+    println(s"[$ApplicationName]: ${resultString(result, conf)}")
   }
 }

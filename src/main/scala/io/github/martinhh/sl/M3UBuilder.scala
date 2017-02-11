@@ -16,14 +16,16 @@ object M3UBuilder {
     *                       audio file path.
     * @param prepend        An optional [[String]] that is prepended to each audio file
     *                       path.
+    * @param charSetName    The name of the charset to be used for writing the m3u file.
     * @return               True if there was an error during file-writing. (This is the
     *                       error flag of the underlying [[java.io.PrintWriter]].)
     */
   def writeToFile(path: String, audioFilePaths: Traversable[String],
-                  remove: Option[String], prepend: Option[String]): Boolean = {
+                  remove: Option[String], prepend: Option[String],
+                  charSetName: String): Boolean = {
 
     import java.io._
-    val pw = new PrintWriter(new File(path))
+    val pw = new PrintWriter(new File(path), charSetName)
 
     pw.println(HeaderString)
 
