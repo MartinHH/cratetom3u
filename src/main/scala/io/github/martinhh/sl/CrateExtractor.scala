@@ -45,16 +45,18 @@ object CrateExtractor {
         // the next 4 bytes indicate the length of the audio file path
         val pathSize = ByteBuffer.wrap(bytesOfFile, i, 4).getInt
 
+        i += PathLengthOffset
+
         if(pathSize > 10000 || pathSize <= 0)
           throw CrateExtractionError(s"Unexpected path size (pathSize=$pathSize)")
 
-        if(i + pathSize >= bytesLength)
+        if(i + pathSize > bytesLength)
           throw CrateExtractionError(s"Path size out of bounds (pathSize=$pathSize, bytesLength=$bytesLength, idx=$i)")
 
         // add audio file path to results:
         results ::= bytesToString(pathSize)
 
-        i += pathSize + PathLengthOffset
+        i += pathSize
       }
 
       i += 1
