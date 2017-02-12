@@ -3,7 +3,7 @@ package io.github.martinhh.sl
 import org.scalatest.FunSuite
 
 
-class CrateExtractorSuit extends FunSuite {
+class CrateExtractorSuite extends FunSuite {
 
   test("extracting 2SongTestCrate.crate should return the two contained paths") {
     val filePath = getClass.getResource("/testcrates/2SongTestCrate.crate").getFile
