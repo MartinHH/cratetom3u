@@ -1,5 +1,6 @@
 package io.github.martinhh.sl
 
+import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
@@ -9,46 +10,51 @@ import java.nio.file.{Files, Paths}
   */
 object CrateExtractor {
 
-  // start of a audio file path is marked by these 4 bytes + 4 subsequent bytes:
-  // TODO 0.2.0: the 4 subsequent bytes appear to contain the length of the audio
-  // file path. That should be used to make crate-file-parsing more efficient.
+  case class CrateExtractionError(msg: String) extends Throwable
+
+  // The start of an audio file path is marked by these 4 bytes + 4 subsequent bytes
+  // that contain the length of the audio file path.
   private val StartMarker: Array[Byte] = "ptrk".map(_.toByte).toArray
-  private val StartMarkerAdditionalOffset = 4
-  private val StartMarkerFullLength = StartMarker.length + StartMarkerAdditionalOffset
+  private val PathLengthOffset = 4
+  private val StartMarkerFullLength = StartMarker.length + PathLengthOffset
 
-  // end of a audio file path is marked by these 4 bytes:
-  private val EndMarker: Array[Byte] = "otrk".map(_.toByte).toArray
-
+  /** Check that bytes contains subSet at idx. */
   private def hasEqualBytesAt(idx: Int, bytes: Array[Byte], subSet: Array[Byte]): Boolean = {
     idx < bytes.length - subSet.length && subSet.indices.forall(i => bytes(idx + i) == subSet(i))
   }
 
-  private def bytesToString(stringBytes: Array[Byte]): String = {
-    new java.lang.String(stringBytes, 0, stringBytes.length, StandardCharsets.UTF_16)
-  }
-
   def audioFilePathsFromCrateFile(pathToCrateFile: String): List[String] = {
     val bytesOfFile = Files.readAllBytes(Paths.get(pathToCrateFile))
+    val bytesLength = bytesOfFile.length
 
     var i = 0
     var results = List.empty[String]
 
-    while(i < bytesOfFile.size - StartMarkerFullLength) {
+    /** Create String from bytesOfFile starting at i. */
+    def bytesToString(size: Int): String = {
+      new java.lang.String(bytesOfFile, i, size, StandardCharsets.UTF_16)
+    }
+
+    while(i < bytesLength - StartMarkerFullLength) {
 
       // search for a startMarker:
       if(hasEqualBytesAt(i, bytesOfFile, StartMarker)) {
         // skip marker
-        i += StartMarkerFullLength
+        i += StartMarker.length
 
-        // copy subsequent bytes until end of file or until endMarker:
-        var pathBytes = List.empty[Byte]
-        while(i < bytesOfFile.size && !hasEqualBytesAt(i, bytesOfFile, EndMarker)){
-          pathBytes ::= bytesOfFile(i)
-          i += 1
-        }
+        // the next 4 bytes indicate the length of the audio file path
+        val pathSize = ByteBuffer.wrap(bytesOfFile, i, 4).getInt
 
-        // add pathString to results:
-        results ::= bytesToString(pathBytes.reverse.toArray)
+        if(pathSize > 10000 || pathSize <= 0)
+          throw CrateExtractionError(s"Unexpected path size (pathSize=$pathSize)")
+
+        if(i + pathSize >= bytesLength)
+          throw CrateExtractionError(s"Path size out of bounds (pathSize=$pathSize, bytesLength=$bytesLength, idx=$i)")
+
+        // add audio file path to results:
+        results ::= bytesToString(pathSize)
+
+        i += pathSize + PathLengthOffset
       }
 
       i += 1

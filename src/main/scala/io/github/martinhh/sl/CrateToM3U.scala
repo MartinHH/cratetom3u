@@ -2,6 +2,7 @@ package io.github.martinhh.sl
 
 import java.io.UnsupportedEncodingException
 
+import io.github.martinhh.sl.CrateExtractor.CrateExtractionError
 import org.rogach.scallop.{ScallopConf, ScallopOption, ValueConverter}
 
 import scala.util.{Failure, Success, Try}
@@ -69,6 +70,8 @@ object CrateToM3U {
       s"Error: no tracks found. Are you sure ${conf.inputPath()} is a valid .crate file?"
     case Failure(e: UnsupportedEncodingException) if conf.charSet.isDefined =>
       s"Error: unsupported charset: ${conf.charSet()}"
+    case Failure(CrateExtractionError(msg)) =>
+      s"Error: unexpected crate file format - $msg"
     case Failure(e) => s"Error: $e"
   }
 
