@@ -9,6 +9,8 @@ scalaVersion := "2.12.1"
 
 libraryDependencies += "org.rogach" %% "scallop" % "2.0.7"
 
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+
 enablePlugins(JavaAppPackaging)
 
 lazy val root = (project in file(".")).
