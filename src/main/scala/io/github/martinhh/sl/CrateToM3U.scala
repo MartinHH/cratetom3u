@@ -38,14 +38,14 @@ object CrateToM3U {
       descr = "Audio file paths substring to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
         descr = "Charset for the output file (default is your system's default)", argName = "charset")
-    private val _dirMode: ScallopOption[Boolean] = opt[Boolean](name = "dirmode", short = 'd',
-      descr = "Enable directory mode")
+    private val _fileMode: ScallopOption[Boolean] = opt[Boolean](name = "filemode", short = 'f',
+      descr = "Enable single file mode")
 
     printedName = ApplicationName
 
     verify()
 
-    val dirMode: Boolean = _dirMode.toOption.getOrElse(false)
+    val fileMode: Boolean = _fileMode.toOption.getOrElse(false)
 
     val m3uConfig: M3UConfig = M3UConfig(remove.toOption, add.toOption, charSet.toOption)
   }
@@ -89,7 +89,15 @@ object CrateToM3U {
 
     val conf = Conf(args)
 
-    if(conf.dirMode) {
+    if(conf.fileMode) {
+      convertFile(
+        extract = CrateExtractor.audioFilePathsFromCrateFile,
+        writeToFile = M3UBuilder.writeToFile(_, _, conf.m3uConfig),
+        in = conf.inputPath(),
+        out = conf.outputPath(),
+        conf.m3uConfig.charSetName
+      )
+    } else {
       Try(CrateExtractor.getCrateFiles(conf.inputPath())) match {
         case Success(files) if files.isEmpty =>
           println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
@@ -106,14 +114,6 @@ object CrateToM3U {
             )
           }
       }
-    } else {
-      convertFile(
-        extract = CrateExtractor.audioFilePathsFromCrateFile,
-        writeToFile = M3UBuilder.writeToFile(_, _, conf.m3uConfig),
-        in = conf.inputPath(),
-        out = conf.outputPath(),
-        conf.m3uConfig.charSetName
-      )
     }
 
   }
