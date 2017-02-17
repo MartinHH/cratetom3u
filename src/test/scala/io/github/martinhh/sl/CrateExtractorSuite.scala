@@ -2,8 +2,13 @@ package io.github.martinhh.sl
 
 import org.scalatest.FunSuite
 
+object CrateExtractorSuite {
+  val NumberOfCrateFilesInTestCratesDir = 1
+}
 
 class CrateExtractorSuite extends FunSuite {
+
+  import CrateExtractorSuite._
 
   test("extracting 2SongTestCrate.crate should return the two contained paths") {
     val filePath = getClass.getResource("/testcrates/2SongTestCrate.crate").getFile
@@ -11,5 +16,27 @@ class CrateExtractorSuite extends FunSuite {
     assertResult(2)(extractedAudioPaths.size)
     assertResult("my music/genre a/Artist X/03 - Some Song.mp3")(extractedAudioPaths.head)
     assertResult("my music/genre b/artist y/Thät Söng With Thöse Germän Letters.wav")(extractedAudioPaths(1))
+  }
+
+  test("getCrateFiles should not return non-\".crate\"-files") {
+    val dirPath = getClass.getResource("/testcrates").getFile
+    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath)
+    assertResult(NumberOfCrateFilesInTestCratesDir)(extractedCratePaths.length)
+  }
+
+  test("CrateSuffixRegex should not replace \".crate\" in the middle of the path") {
+    val input = "/someDir/.crateDir/MyCrate.crate"
+    val replaced = input.replaceAll(CrateExtractor.CrateSuffixRegex, "")
+    assertResult("/someDir/.crateDir/MyCrate")(replaced)
+  }
+
+  test("CrateFileRegex should be matched by \".crate\" at the end of the path") {
+    val input = "/someDir/subDir/MyCrate.crate"
+    assert(input.matches(CrateExtractor.CrateFileRegex))
+  }
+
+  test("CrateFileRegex should not be matched by \".crate\" in the middle of the path") {
+    val input = "/someDir/.crateDir/MyCrate.foo"
+    assert(!input.matches(CrateExtractor.CrateFileRegex))
   }
 }
