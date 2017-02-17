@@ -28,9 +28,9 @@ object CrateToM3U {
     )
 
     val inputPath: ScallopOption[String] = trailArg[String](name = "input",
-        descr = "Path to input .crate file (or crates directory in directory mode) (required)", required = true)
+        descr = "Path to input crates directory (or .crate file in single file mode) (required)", required = true)
     val outputPath: ScallopOption[String] = trailArg[String](name = "output",
-        descr = "Path to output .m3u file (or output directory in directory mode) (required)", required = true)
+        descr = "Path to output directory (or .m3u file in single file mode) (required)", required = true)
 
     val remove: ScallopOption[String] = opt[String](name = "remove", short = 'r',
       descr = "Audio file paths substring to remove (supports regex)", argName = "expression")
