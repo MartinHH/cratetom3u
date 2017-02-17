@@ -27,15 +27,15 @@ object CrateToM3U {
         |""".stripMargin
     )
 
-    val inputPath: ScallopOption[String] = trailArg[String](name = "input",
-        descr = "Path to input crates directory (or .crate file in single file mode) (required)", required = true)
-    val outputPath: ScallopOption[String] = trailArg[String](name = "output",
-        descr = "Path to output directory (or .m3u file in single file mode) (required)", required = true)
+    val inputPath: ScallopOption[String] = trailArg[String](name = "inputPath",
+        descr = "Path to input crates directory (or .crate file in single file mode)", required = true)
+    val outputPath: ScallopOption[String] = trailArg[String](name = "outputPath",
+        descr = "Path to output directory (or .m3u file in single file mode)", required = true)
 
     val remove: ScallopOption[String] = opt[String](name = "remove", short = 'r',
-      descr = "Audio file paths substring to remove (supports regex)", argName = "expression")
+      descr = "Audio file path substring to remove (supports regex)", argName = "expression")
     val add: ScallopOption[String] = opt[String](name = "add", short = 'a',
-      descr = "Audio file paths substring to prepend", argName = "prefix")
+      descr = "Audio file path prefix to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
         descr = "Charset for the output file (default is your system's default)", argName = "charset")
     private val _fileMode: ScallopOption[Boolean] = opt[Boolean](name = "filemode", short = 'f',
