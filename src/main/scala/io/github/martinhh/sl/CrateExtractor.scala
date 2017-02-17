@@ -77,10 +77,13 @@ object CrateExtractor {
   val CrateSuffixRegex = """\.[cC][rR][aA][tT][eE]$"""
   val CrateFileRegex = s""".*$CrateSuffixRegex"""
 
-  def getCrateFiles(parentDir: String): Array[String] = {
+  def getCrateFiles(parentDir: String, matchRegex: Option[String]): Array[String] = {
+    def matches(string: String): Boolean =
+      string.matches(CrateFileRegex) && matchRegex.fold(true)(string.matches)
+
     val file = new File(parentDir)
     if(file.exists() && file.isDirectory) {
-      val crateFiles = file.list().filter(_.matches(CrateFileRegex))
+      val crateFiles = file.list().filter(matches)
       crateFiles
     } else {
       Array.empty

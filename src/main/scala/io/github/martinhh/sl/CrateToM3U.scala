@@ -38,6 +38,9 @@ object CrateToM3U {
       descr = "Audio file path prefix to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
         descr = "Charset for the output file (default is your system's default)", argName = "charset")
+    val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
+      descr = "String that extracted .crate files must match (supports regex) - irrelevant in file mode",
+      argName = "expression")
     private val _fileMode: ScallopOption[Boolean] = opt[Boolean](name = "filemode", short = 'f',
       descr = "Enable single file mode")
 
@@ -98,7 +101,7 @@ object CrateToM3U {
         conf.m3uConfig.charSetName
       )
     } else {
-      Try(CrateExtractor.getCrateFiles(conf.inputPath())) match {
+      Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
         case Success(files) if files.isEmpty =>
           println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
         case Failure(e) =>

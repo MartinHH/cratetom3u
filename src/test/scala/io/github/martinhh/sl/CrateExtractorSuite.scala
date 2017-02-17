@@ -20,8 +20,20 @@ class CrateExtractorSuite extends FunSuite {
 
   test("getCrateFiles should not return non-\".crate\"-files") {
     val dirPath = getClass.getResource("/testcrates").getFile
-    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath)
+    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = None)
     assertResult(NumberOfCrateFilesInTestCratesDir)(extractedCratePaths.length)
+  }
+
+  test("getCrateFiles with regex should not return non-matching \".crate\"-files") {
+    val dirPath = getClass.getResource("/testcrates").getFile
+    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = Some(""".*foo.*"""))
+    assertResult(0)(extractedCratePaths.length)
+  }
+
+  test("getCrateFiles with regex should not return matching \".crate\"-files") {
+    val dirPath = getClass.getResource("/testcrates").getFile
+    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = Some(""".*2So.*Test.*"""))
+    assertResult(1)(extractedCratePaths.length)
   }
 
   test("CrateSuffixRegex should not replace \".crate\" in the middle of the path") {
