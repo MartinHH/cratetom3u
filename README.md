@@ -13,28 +13,39 @@ Enter `cratetom3u --help` for a list of all options:
 
 ```
 MyMachine:~ myuser$ cratetom3u --help
-CrateToM3U 0.1.0
-CrateToM3U is a tool to convert Serato .crate files to .m3u playlist files.
+cratetom3u 0.2.0
+cratetom3u is a tool to convert Serato .crate files to .m3u playlist files.
 (Please note that "smart crates" are not supported.)
 
 Options:
 
-  -i, --input  <arg>     path to input .crate file (required)
-  -o, --output  <arg>    path to output .m3u file (required)
+  -a, --add  <prefix>           Audio file path prefix to prepend
+  -c, --charset  <charset>      Charset for the output files (default is your
+                                system's default)
+  -f, --filemode                Enable single file mode
+  -m, --matches  <expression>   String that extracted .crate files must match
+                                (supports regex) - irrelevant in single file
+                                mode
+  -r, --remove  <expression>    Audio file path substring to remove (supports
+                                regex)
+  -s, --suffix  <expression>    The suffix for the output files in directory
+                                mode (including the leading '.' - default is
+                                ".m3u") - irrelevant in single file mode
+      --help                    Show help message
+      --version                 Show version of this program
 
-  -a, --add  <arg>       audio file paths substring to prepend
-  -c, --charset  <arg>   charset for the output file (default is your system's
-                         default)
-  -r, --remove  <arg>    audio file paths substring to remove (supports regex)
-      --help             Show help message
-      --version          Show version of this program
+ trailing arguments:
+  inputPath (required)    Path to input crates directory (or .crate file in
+                          single file mode)
+  outputPath (required)   Path to output directory (or .m3u file in single file
+                          mode)
 ```
 
-So a basic example would be this:
+So a basic example to convert all crates from the default `Crates` would
+ be this (writing the resulting `.m3u` files to `~/CrateM3Us/`:
 
 ```
-MyMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u
-[CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
+MyMachine:~ myuser$ cratetom3u ~/Music/_Serato_/Crates/ ~/CrateM3Us/
 ```
 
 However, since the audio file paths in `.crate` files are stored without
@@ -42,10 +53,9 @@ a leading `/` in front of the root directory, you might need to prepend
 the missing `/` using the `-a` option:
 
 ```
-MyMachine:~ myuser$ cratetom3u -i ~/Music/_Serato_/Crates/Example.crate -o ~/Example.m3u -a /
-[CrateToM3U]: Wrote 50 tracks to /Users/MyUser/Example.m3u
+MyMachine:~ myuser$ cratetom3u -a / ~/Music/_Serato_/Crates/ ~/CrateM3Us/
 ```
 
 On a Mac with Serato installed to its default location, the above
-command should create a working `m3u` file that can be used with VLC,
+command should create working `.m3u` files that can be used with VLC,
 Itunes etc.
