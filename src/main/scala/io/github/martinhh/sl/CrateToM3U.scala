@@ -28,18 +28,18 @@ object CrateToM3U {
     )
 
     val inputPath: ScallopOption[String] = trailArg[String](name = "input",
-        descr = "path to input .crate file (or crates directory in directory mode) (required)", required = true)
+        descr = "Path to input .crate file (or crates directory in directory mode) (required)", required = true)
     val outputPath: ScallopOption[String] = trailArg[String](name = "output",
-        descr = "path to output .m3u file (or output directory in directory mode) (required)", required = true)
+        descr = "Path to output .m3u file (or output directory in directory mode) (required)", required = true)
 
     val remove: ScallopOption[String] = opt[String](name = "remove", short = 'r',
-      descr = "audio file paths substring to remove (supports regex)")
+      descr = "Audio file paths substring to remove (supports regex)")
     val add: ScallopOption[String] = opt[String](name = "add", short = 'a',
-      descr = "audio file paths substring to prepend")
+      descr = "Audio file paths substring to prepend")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
-        descr = "charset for the output file (default is your system's default)")
+        descr = "Charset for the output file (default is your system's default)")
     private val _dirMode: ScallopOption[Boolean] = opt[Boolean](name = "dirmode", short = 'd',
-      descr = "enable directory mode")
+      descr = "Enable directory mode")
 
     printedName = ApplicationName
 
@@ -92,7 +92,6 @@ object CrateToM3U {
 
 
     if(conf.dirMode) {
-
       Try(CrateExtractor.getCrateFiles(conf.inputPath())) match {
         case Success(files) if files.isEmpty =>
           println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
@@ -109,7 +108,6 @@ object CrateToM3U {
             )
           }
       }
-
     } else {
       convertFile(
         extract = CrateExtractor.audioFilePathsFromCrateFile,
