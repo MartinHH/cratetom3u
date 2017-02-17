@@ -5,7 +5,7 @@ organization := "io.github.martinhh"
 
 version := "0.2.0"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.11.8"
 
 libraryDependencies += "org.rogach" %% "scallop" % "2.0.7"
 
