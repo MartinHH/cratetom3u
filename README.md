@@ -42,7 +42,7 @@ Options:
 ```
 
 So a basic example to convert all crates from the default `Crates` would
- be this (writing the resulting `.m3u` files to `~/CrateM3Us/`:
+ be this (writing the resulting `.m3u` files to `~/CrateM3Us/`):
 
 ```
 MyMachine:~ myuser$ cratetom3u ~/Music/_Serato_/Crates/ ~/CrateM3Us/
