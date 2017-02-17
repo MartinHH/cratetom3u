@@ -41,6 +41,9 @@ object CrateToM3U {
     val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
       descr = "String that extracted .crate files must match (supports regex) - irrelevant in file mode",
       argName = "expression")
+    private val _suffix: ScallopOption[String] = opt[String](name = "suffix", short = 's',
+      descr = "The suffix for the output files in directory mode (including the leading '.' - default is \".m3u\") - " +
+        "irrelevant in file mode", argName = "expression")
     private val _fileMode: ScallopOption[Boolean] = opt[Boolean](name = "filemode", short = 'f',
       descr = "Enable single file mode")
 
@@ -49,6 +52,8 @@ object CrateToM3U {
     verify()
 
     val fileMode: Boolean = _fileMode.toOption.getOrElse(false)
+
+    val suffix: String = _suffix.toOption.getOrElse(".m3u")
 
     val m3uConfig: M3UConfig = M3UConfig(remove.toOption, add.toOption, charSet.toOption)
   }
@@ -69,7 +74,7 @@ object CrateToM3U {
       s"Error: found $x tracks, but there was an error writing to $out"
     case Failure(EmptyAudioFileList) =>
       s"No tracks found in $in, so no output file was created"
-    case Failure(e: UnsupportedEncodingException) if charSet.isDefined =>
+    case Failure(_: UnsupportedEncodingException) if charSet.isDefined =>
       s"Error: unsupported charset: ${charSet.get}"
     case Failure(CrateExtractionError(msg)) =>
       s"Error: unexpected crate file format - $msg"
@@ -112,7 +117,7 @@ object CrateToM3U {
               extract = CrateExtractor.audioFilePathsFromCrateFile(conf.inputPath(), _),
               writeToFile = M3UBuilder.writeToFile(conf.outputPath(), _, _, conf.m3uConfig),
               in = crateFile,
-              out = CrateExtractor.getSimpleNameWithoutCrateSuffix(crateFile) + ".m3u",
+              out = CrateExtractor.getSimpleNameWithoutCrateSuffix(crateFile) + conf.suffix,
               conf.m3uConfig.charSetName
             )
           }
