@@ -1,31 +1,51 @@
 package io.github.martinhh.sl
 
+import java.io.File
+
 
 object M3UBuilder {
 
   private val HeaderString = "#EXTM3U"
 
-
   /**
-    * Creates an m3u file.
+    * Non-filepath-parameters for [[writeToFile()]]
     *
-    * @param path           The path of the file that is to be created.
-    * @param audioFilePaths List of audio file paths for the m3u content. Typically created
-    *                       via [[CrateExtractor.audioFilePathsFromCrateFile(pathToCrateFile)]]
     * @param remove         An optional [[String]] whose first match is removed from each
     *                       audio file path.
     * @param prepend        An optional [[String]] that is prepended to each audio file
     *                       path.
     * @param charSetName    Optional name of the charset to be used for writing the m3u file.
+    */
+  case class M3UConfig(remove: Option[String], prepend: Option[String], charSetName: Option[String])
+
+  def writeToFile(path: String, audioFilePaths: Traversable[String],
+                  config: M3UConfig): Boolean = {
+    writeToFile(new File(path), audioFilePaths, config)
+  }
+
+  def writeToFile(dir: String, name: String, audioFilePaths: Traversable[String],
+                  config: M3UConfig): Boolean = {
+    val dirFile = new File(dir)
+    if(!dirFile.exists())
+      dirFile.mkdir()
+    writeToFile(new File(dir, name), audioFilePaths, config)
+  }
+
+  /**
+    * Creates an m3u file.
+    *
+    * @param file           The file that is to be created.
+    * @param audioFilePaths List of audio file paths for the m3u content. Typically created
+    *                       via [[CrateExtractor.audioFilePathsFromCrateFile(pathToCrateFile)]]
+    * @param config         Additional parameters.
     * @return               True if there was an error during file-writing. (This is the
     *                       error flag of the underlying [[java.io.PrintWriter]].)
     */
-  def writeToFile(path: String, audioFilePaths: Traversable[String],
-                  remove: Option[String], prepend: Option[String],
-                  charSetName: Option[String]): Boolean = {
+  def writeToFile(file: File, audioFilePaths: Traversable[String],
+                  config: M3UConfig): Boolean = {
 
     import java.io._
-    val file = new File(path)
+    import config._
     val pw = charSetName.fold(new PrintWriter(file))(new PrintWriter(file, _))
 
     pw.println(HeaderString)

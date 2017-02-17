@@ -1,8 +1,9 @@
 package io.github.martinhh.sl
 
+import java.io.File
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 
 /**
@@ -23,8 +24,16 @@ object CrateExtractor {
     idx < bytes.length - subSet.length && subSet.indices.forall(i => bytes(idx + i) == subSet(i))
   }
 
+  def audioFilePathsFromCrateFile(dirPath: String, fileName: String): List[String] = {
+    audioFilePathsFromCrateFile(Paths.get(dirPath, fileName))
+  }
+
   def audioFilePathsFromCrateFile(pathToCrateFile: String): List[String] = {
-    val bytesOfFile = Files.readAllBytes(Paths.get(pathToCrateFile))
+    audioFilePathsFromCrateFile(Paths.get(pathToCrateFile))
+  }
+
+  def audioFilePathsFromCrateFile(pathToCrateFile: Path): List[String] = {
+    val bytesOfFile = Files.readAllBytes(pathToCrateFile)
     val bytesLength = bytesOfFile.length
 
     var i = 0
@@ -63,5 +72,22 @@ object CrateExtractor {
     }
 
     results.reverse
+  }
+
+  val CrateSuffixRegex = """\.[cC][rR][aA][tT][eE]$"""
+  val CrateFileRegex = s""".*$CrateSuffixRegex"""
+
+  def getCrateFiles(parentDir: String): Array[String] = {
+    val file = new File(parentDir)
+    if(file.exists() && file.isDirectory) {
+      val crateFiles = file.list().filter(_.matches(CrateFileRegex))
+      crateFiles
+    } else {
+      Array.empty
+    }
+  }
+
+  def getSimpleNameWithoutCrateSuffix(file: String): String = {
+    new File(file).getName.replaceAll(CrateSuffixRegex, "")
   }
 }
