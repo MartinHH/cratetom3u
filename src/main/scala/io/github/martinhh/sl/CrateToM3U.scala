@@ -44,7 +44,7 @@ object CrateToM3U {
       descr = s"String that extracted .crate files must match (supports regex)$irrelevantForFile",
       argName = "expression")
     val backslash: ScallopOption[Boolean] = opt[Boolean](name = "backslash", short = 'b',
-      descr = s"Replace all '/'s in audio file paths by '\\'s$irrelevantForFile")
+      descr = s"Replace all '/'s in audio file paths by '\\'s")
     private val _suffix: ScallopOption[String] = opt[String](name = "suffix", short = 's',
       descr = "The suffix for the output files in directory mode (including the leading '.' - default is \".m3u\")" +
         irrelevantForFile, argName = "expression")
