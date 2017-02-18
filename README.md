@@ -13,15 +13,13 @@ Enter `cratetom3u --help` for a list of all options:
 
 ```
 MyMachine:~ myuser$ cratetom3u --help
-cratetom3u 0.2.1
 cratetom3u is a tool to convert Serato .crate files to .m3u playlist files.
 (Please note that "smart crates" are not supported.)
 
 Options:
 
   -a, --add  <prefix>           Audio file path prefix to prepend
-  -b, --backslash               Replace all '/'s in audio file paths by '\'s -
-                                irrelevant in single file mode
+  -b, --backslash               Replace all '/'s in audio file paths by '\'s
   -c, --charset  <charset>      Charset for the output files (default is your
                                 system's default)
   -f, --filemode                Enable single file mode
