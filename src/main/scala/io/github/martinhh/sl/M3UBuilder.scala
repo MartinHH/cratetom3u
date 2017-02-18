@@ -15,8 +15,9 @@ object M3UBuilder {
     * @param prepend        An optional [[String]] that is prepended to each audio file
     *                       path.
     * @param charSetName    Optional name of the charset to be used for writing the m3u file.
+    * @param backslash      If true, all '/'s in audio file paths will be replaced b '\'s.
     */
-  case class M3UConfig(remove: Option[String], prepend: Option[String], charSetName: Option[String])
+  case class M3UConfig(remove: Option[String], prepend: Option[String], charSetName: Option[String], backslash: Boolean)
 
   def writeToFile(path: String, audioFilePaths: Traversable[String],
                   config: M3UConfig): Boolean = {
@@ -53,7 +54,8 @@ object M3UBuilder {
     audioFilePaths.foreach { audioFilePath =>
       val removed = remove.fold(audioFilePath)(r => audioFilePath.replaceFirst(r, ""))
       val prepended = prepend.fold(removed)(_ + removed)
-      pw.println(prepended)
+      val backslashed = if(config.backslash) prepended.replace('/', '\\') else prepended
+      pw.println(backslashed)
     }
 
     pw.close()

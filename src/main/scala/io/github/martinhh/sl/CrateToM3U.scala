@@ -43,6 +43,8 @@ object CrateToM3U {
     val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
       descr = s"String that extracted .crate files must match (supports regex)$irrelevantForFile",
       argName = "expression")
+    val backslash: ScallopOption[Boolean] = opt[Boolean](name = "backslash", short = 'b',
+      descr = s"""Replace all '/'s in audio file paths by '\'s$irrelevantForFile""")
     private val _suffix: ScallopOption[String] = opt[String](name = "suffix", short = 's',
       descr = "The suffix for the output files in directory mode (including the leading '.' - default is \".m3u\")" +
         irrelevantForFile, argName = "expression")
@@ -57,7 +59,8 @@ object CrateToM3U {
 
     val suffix: String = _suffix.toOption.getOrElse(".m3u")
 
-    val m3uConfig: M3UConfig = M3UConfig(remove.toOption, add.toOption, charSet.toOption)
+    val m3uConfig: M3UConfig =
+      M3UConfig(remove.toOption, add.toOption, charSet.toOption, backslash.toOption.getOrElse(false))
   }
 
   case object EmptyAudioFileList extends Throwable
