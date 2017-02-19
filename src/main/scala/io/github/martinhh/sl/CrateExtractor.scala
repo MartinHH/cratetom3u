@@ -83,7 +83,9 @@ object CrateExtractor {
 
     val file = new File(parentDir)
     if(file.exists() && file.isDirectory) {
-      val crateFiles = file.list().filter(matches)
+      val crateFiles = file.listFiles.collect {
+        case f if !f.isDirectory && matches(f.getName) => f.getName
+      }
       crateFiles
     } else {
       Array.empty
