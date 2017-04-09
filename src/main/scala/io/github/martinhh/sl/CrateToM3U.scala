@@ -23,6 +23,9 @@ object CrateToM3U {
       s"""$ApplicationName is a tool to convert Serato .crate files to .m3u playlist files.
         |(Please note that "smart crates" are not supported.)
         |
+        |Usage:
+        |cratetom3u [options] inputpath outputpath
+        |
         |Options:
         |""".stripMargin
     )
