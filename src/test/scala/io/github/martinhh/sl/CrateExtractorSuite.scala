@@ -30,7 +30,7 @@ class CrateExtractorSuite extends FunSuite {
     assertResult(0)(extractedCratePaths.length)
   }
 
-  test("getCrateFiles with regex should not return matching \".crate\"-files") {
+  test("getCrateFiles with regex should return matching \".crate\"-files") {
     val dirPath = getClass.getResource("/testcrates").getFile
     val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = Some(""".*2So.*Test.*"""))
     assertResult(1)(extractedCratePaths.length)
