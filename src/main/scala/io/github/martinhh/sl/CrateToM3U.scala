@@ -1,11 +1,15 @@
 package io.github.martinhh.sl
 
 import java.io.UnsupportedEncodingException
+import java.nio.file.{Path, Paths}
 
-import io.github.martinhh.sl.CrateExtractor.CrateExtractionError
+import cats.effect.{Effect, IO}
+import fs2.{io => _, _}
 import io.github.martinhh.sl.M3UBuilder.M3UConfig
 import org.rogach.scallop.{ScallopConf, ScallopOption}
 
+import scala.concurrent.ExecutionContext
+import scala.language.higherKinds
 import scala.util.{Failure, Success, Try}
 
 
@@ -13,6 +17,8 @@ object CrateToM3U {
 
   private val ApplicationName = io.github.martinhh.sl.BuildInfo.name.toLowerCase
   private val Version = io.github.martinhh.sl.BuildInfo.version
+
+  private val DefaultCharSet = "UTF-16"
 
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList) {
@@ -42,7 +48,7 @@ object CrateToM3U {
     val add: ScallopOption[String] = opt[String](name = "add", short = 'a',
       descr = "Audio file path prefix to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
-        descr = "Charset for the output files (default is your system's default)", argName = "charset")
+        descr = s"Charset for the output files (default is $DefaultCharSet)", argName = "charset")
     val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
       descr = s"String that extracted .crate files must match (supports regex)$irrelevantForFile",
       argName = "expression")
@@ -68,12 +74,7 @@ object CrateToM3U {
 
   case object EmptyAudioFileList extends Throwable
 
-  /** If no audio tracks were found in input, something is probably wrong. */
-  private def requireNonEmptyFileSize(audioFilePaths: Traversable[String]): Try[Int] = {
-    val size = audioFilePaths.size
-    if (size <= 0) Failure(EmptyAudioFileList) else Success(size)
-  }
-
+  // TODO (via-fs2): reactivate something like this
   private def resultString(result: Try[(Int, Boolean)], in: String, out: String,
                            charSet: Option[String]): String = result match {
     case Success((x, false)) =>
@@ -84,53 +85,45 @@ object CrateToM3U {
       s"No tracks found in $in, so no output file was created"
     case Failure(_: UnsupportedEncodingException) if charSet.isDefined =>
       s"Error: unsupported charset: ${charSet.get}"
-    case Failure(CrateExtractionError(msg)) =>
-      s"Error: unexpected crate file format - $msg"
     case Failure(e) => s"Error: $e"
   }
 
-  /** Combines crate-extraction and m3u-writing wrapped in [[Try]]s and prints a result line. */
-  private def convertFile(extract: String => List[String], writeToFile: (String, List[String]) => Boolean,
-                          in: String, out: String, charSetName: Option[String]): Unit = {
-    val result = for {
-      audioPaths <- Try(extract(in))
-      nFiles <- requireNonEmptyFileSize(audioPaths)
-      hasError <- Try(writeToFile(out, audioPaths))
-    } yield (nFiles, hasError)
 
-    println(s"[$ApplicationName]: ${resultString(result, in, out, charSetName)}")
+  /** Combines crate-extraction and m3u-writing wrapped in [[Try]]s and prints a result line. */
+  private def convertFile[F[_]](in: Path, out: Path, config: M3UConfig)(implicit F: Effect[F], ec: ExecutionContext): fs2.Stream[F, Unit] = {
+    CrateExtractor.filePathsStream[F](in)
+      .through(M3UBuilder.filePathsToM3U[F](config))
+      .through(FileSink.async[F](out, config.charSetName.getOrElse(DefaultCharSet)))
   }
 
   def main(args: Array[String]): Unit = {
+    import ExecutionContext.Implicits.global
 
     val conf = Conf(args)
 
-    if(conf.fileMode) {
-      convertFile(
-        extract = CrateExtractor.audioFilePathsFromCrateFile,
-        writeToFile = M3UBuilder.writeToFile(_, _, conf.m3uConfig),
-        in = conf.inputPath(),
-        out = conf.outputPath(),
-        conf.m3uConfig.charSetName
-      )
+    def failWithMessage(string: String): Stream[IO, Nothing] =
+      Stream.eval_(IO {
+        println(string)
+      })
+
+    val stream: fs2.Stream[IO, Unit] =
+      if(conf.fileMode) {
+        convertFile[IO](Paths.get(conf.inputPath()), Paths.get(conf.outputPath()), conf.m3uConfig)
     } else {
       Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
         case Success(files) if files.isEmpty =>
-          println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
+          failWithMessage(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
         case Failure(e) =>
-          println(s"[$ApplicationName]: Error: $e")
+          failWithMessage(s"[$ApplicationName]: Error: $e")
         case Success(files) =>
-          files.foreach { crateFile =>
-            convertFile(
-              extract = CrateExtractor.audioFilePathsFromCrateFile(conf.inputPath(), _),
-              writeToFile = M3UBuilder.writeToFile(conf.outputPath(), _, _, conf.m3uConfig),
-              in = crateFile,
-              out = CrateExtractor.getSimpleNameWithoutCrateSuffix(crateFile) + conf.suffix,
-              conf.m3uConfig.charSetName
-            )
+          Stream(files:_*).flatMap { pathString =>
+            convertFile[IO](Paths.get(conf.inputPath()), Paths.get(conf.outputPath()), conf.m3uConfig)
           }
+
       }
     }
+
+    stream.compile.drain.unsafeRunSync()
 
   }
 }
