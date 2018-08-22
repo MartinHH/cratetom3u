@@ -1,7 +1,5 @@
 package io.github.martinhh.sl
 
-import java.io.File
-
 import fs2.Pipe
 
 import scala.language.higherKinds
