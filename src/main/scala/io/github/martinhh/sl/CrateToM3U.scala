@@ -117,7 +117,9 @@ object CrateToM3U {
           failWithMessage(s"[$ApplicationName]: Error: $e")
         case Success(files) =>
           Stream(files:_*).flatMap { pathString =>
-            convertFile[IO](Paths.get(conf.inputPath()), Paths.get(conf.outputPath()), conf.m3uConfig)
+            val outFileName = CrateExtractor.getSimpleNameWithoutCrateSuffix(pathString) + conf.suffix
+            def path(getDir: Conf => String, fileName: String): Path = Paths.get(getDir(conf), fileName)
+            convertFile[IO](path(_.inputPath(), pathString), path(_.outputPath(), outFileName), conf.m3uConfig)
           }
 
       }
