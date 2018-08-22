@@ -27,28 +27,28 @@ object CrateToM3U {
 
     banner(
       s"""$ApplicationName is a tool to convert Serato .crate files to .m3u playlist files.
-        |(Please note that "smart crates" are not supported.)
-        |
+         |(Please note that "smart crates" are not supported.)
+         |
         |Usage:
-        |cratetom3u [options] inputpath outputpath
-        |
+         |cratetom3u [options] inputpath outputpath
+         |
         |Options:
-        |""".stripMargin
+         |""".stripMargin
     )
 
     private val irrelevantForFile = " - irrelevant in single file mode"
 
     val inputPath: ScallopOption[String] = trailArg[String](name = "inputPath",
-        descr = "Path to input crates directory (or .crate file in single file mode)", required = true)
+      descr = "Path to input crates directory (or .crate file in single file mode)", required = true)
     val outputPath: ScallopOption[String] = trailArg[String](name = "outputPath",
-        descr = "Path to output directory (or .m3u file in single file mode)", required = true)
+      descr = "Path to output directory (or .m3u file in single file mode)", required = true)
 
     val remove: ScallopOption[String] = opt[String](name = "remove", short = 'r',
       descr = "Audio file path substring to remove (supports regex)", argName = "expression")
     val add: ScallopOption[String] = opt[String](name = "add", short = 'a',
       descr = "Audio file path prefix to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
-        descr = s"Charset for the output files (default is $DefaultCharSet)", argName = "charset")
+      descr = s"Charset for the output files (default is $DefaultCharSet)", argName = "charset")
     val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
       descr = s"String that extracted .crate files must match (supports regex)$irrelevantForFile",
       argName = "expression")
@@ -107,23 +107,25 @@ object CrateToM3U {
       })
 
     val stream: fs2.Stream[IO, Unit] =
-      if(conf.fileMode) {
+      if (conf.fileMode) {
         convertFile[IO](Paths.get(conf.inputPath()), Paths.get(conf.outputPath()), conf.m3uConfig)
-    } else {
-      Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
-        case Success(files) if files.isEmpty =>
-          failWithMessage(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
-        case Failure(e) =>
-          failWithMessage(s"[$ApplicationName]: Error: $e")
-        case Success(files) =>
-          Stream(files:_*).flatMap { pathString =>
-            val outFileName = CrateExtractor.getSimpleNameWithoutCrateSuffix(pathString) + conf.suffix
-            def path(getDir: Conf => String, fileName: String): Path = Paths.get(getDir(conf), fileName)
-            convertFile[IO](path(_.inputPath(), pathString), path(_.outputPath(), outFileName), conf.m3uConfig)
-          }
+      } else {
+        Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
+          case Success(files) if files.isEmpty =>
+            failWithMessage(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
+          case Failure(e) =>
+            failWithMessage(s"[$ApplicationName]: Error: $e")
+          case Success(files) =>
+            Stream(files: _*).flatMap { pathString =>
+              val outFileName = CrateExtractor.getSimpleNameWithoutCrateSuffix(pathString) + conf.suffix
 
+              def path(getDir: Conf => String, fileName: String): Path = Paths.get(getDir(conf), fileName)
+
+              convertFile[IO](path(_.inputPath(), pathString), path(_.outputPath(), outFileName), conf.m3uConfig)
+            }
+
+        }
       }
-    }
 
     stream.compile.drain.unsafeRunSync()
 
