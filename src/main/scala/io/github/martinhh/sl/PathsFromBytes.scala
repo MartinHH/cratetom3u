@@ -3,7 +3,7 @@ package io.github.martinhh.sl
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
-import fs2.Pipe
+import fs2.{Chunk, Pipe, Pull, Stream}
 
 import scala.language.higherKinds
 
@@ -102,5 +102,73 @@ object PathsFromBytes {
     }
   }
 
+  // The start of an audio file path is marked by these 4 bytes + 4 subsequent bytes
+  // that contain the length of the audio file path.
+  private val StartMarker: Vector[Byte] = "ptrk".map(_.toByte).toVector
+  private val PathLengthOffset = 4
+  private val StartMarkerFullLength = StartMarker.length + PathLengthOffset
+
+  def pipe2[F[_]]: Pipe[F, Byte, String] = {
+
+    /** Check that bytes contains subSet at idx. */
+    def hasEqualBytesAt(idx: Int, bytes: Vector[Byte], subSet: Vector[Byte]): Boolean = {
+      idx < bytes.length - subSet.length && subSet.indices.forall(i => bytes(idx + i) == subSet(i))
+    }
+
+    def audioFilePathsFromCrateFile(bytes: Vector[Byte]): (Vector[String], Vector[Byte]) = {
+      val bytesLength = bytes.length
+      var i = 0
+      var indexOfRemainder = 0
+      var results = Vector.empty[String]
+      var done = false
+
+      /** Create String from bytesOfFile starting at i. */
+      def bytesToString(size: Int): String = {
+        new java.lang.String(bytes.toArray, i, size, StandardCharsets.UTF_16)
+      }
+
+      while (!done && i < bytesLength - StartMarkerFullLength) {
+
+        // search for a startMarker:
+        if (hasEqualBytesAt(i, bytes, StartMarker)) {
+          // skip marker
+          i += StartMarker.length
+
+          // the next 4 bytes indicate the length of the audio file path
+          val pathSize = ByteBuffer.wrap(bytes.toArray, i, 4).getInt
+
+          i += PathLengthOffset
+
+          if (i + pathSize <= bytesLength) {
+            // add audio file path to results:
+            results :+= bytesToString(pathSize)
+
+            i += pathSize
+            indexOfRemainder = i
+          } else {
+            done = true
+          }
+
+
+        }
+
+        i += 1
+      }
+
+      results -> bytes.drop(i)
+    }
+
+    def go(buffer: Vector[Byte],
+           stream: Stream[F, Byte]): Pull[F, String, Option[Unit]] =
+      stream.pull.unconsChunk.flatMap[F, String, Option[Unit]] {
+        case Some((chunk, remainingStream)) =>
+          val (toOutput, remainder) = audioFilePathsFromCrateFile(buffer ++ chunk.toVector)
+          Pull.outputChunk(Chunk.vector(toOutput)) >> go(remainder, remainingStream)
+        case None =>
+          Pull.pure(None)
+      }
+
+    in => go(Vector.empty, in).stream
+  }
 
 }
