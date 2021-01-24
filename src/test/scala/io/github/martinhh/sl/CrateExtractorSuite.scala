@@ -1,12 +1,12 @@
 package io.github.martinhh.sl
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 object CrateExtractorSuite {
   val NumberOfCrateFilesInTestCratesDir = 1
 }
 
-class CrateExtractorSuite extends FunSuite {
+class CrateExtractorSuite extends AnyFunSuite {
 
   import CrateExtractorSuite._
 
