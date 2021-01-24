@@ -3,13 +3,20 @@ name := "CrateToM3U"
 
 organization := "io.github.martinhh"
 
-version := "0.2.1"
+version := "0.2.3"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.13.4"
 
-libraryDependencies += "org.rogach" %% "scallop" % "2.0.7"
+libraryDependencies += "org.rogach" %% "scallop" % "4.0.1"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.2" % "test"
+
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-Xfatal-warnings",
+  "-Wunused:imports"
+)
 
 enablePlugins(JavaAppPackaging)
 

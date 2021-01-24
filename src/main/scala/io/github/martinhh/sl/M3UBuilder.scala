@@ -19,12 +19,12 @@ object M3UBuilder {
     */
   case class M3UConfig(remove: Option[String], prepend: Option[String], charSetName: Option[String], backslash: Boolean)
 
-  def writeToFile(path: String, audioFilePaths: Traversable[String],
+  def writeToFile(path: String, audioFilePaths: Iterable[String],
                   config: M3UConfig): Boolean = {
     writeToFile(new File(path), audioFilePaths, config)
   }
 
-  def writeToFile(dir: String, name: String, audioFilePaths: Traversable[String],
+  def writeToFile(dir: String, name: String, audioFilePaths: Iterable[String],
                   config: M3UConfig): Boolean = {
     val dirFile = new File(dir)
     if(!dirFile.exists())
@@ -42,7 +42,7 @@ object M3UBuilder {
     * @return               True if there was an error during file-writing. (This is the
     *                       error flag of the underlying [[java.io.PrintWriter]].)
     */
-  def writeToFile(file: File, audioFilePaths: Traversable[String],
+  def writeToFile(file: File, audioFilePaths: Iterable[String],
                   config: M3UConfig): Boolean = {
 
     import java.io._

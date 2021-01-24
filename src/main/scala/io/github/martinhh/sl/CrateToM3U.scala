@@ -69,7 +69,7 @@ object CrateToM3U {
   case object EmptyAudioFileList extends Throwable
 
   /** If no audio tracks were found in input, something is probably wrong. */
-  private def requireNonEmptyFileSize(audioFilePaths: Traversable[String]): Try[Int] = {
+  private def requireNonEmptyFileSize(audioFilePaths: Iterable[String]): Try[Int] = {
     val size = audioFilePaths.size
     if (size <= 0) Failure(EmptyAudioFileList) else Success(size)
   }
