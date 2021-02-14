@@ -6,6 +6,14 @@ Itch) to `.m3u` playlist files.
 
 (Note that currently, "smart crates" are not supported.)
 
+## Installation
+
+For those who just want to use this: if you're on a Mac and you have [Homebrew](https://brew.sh) installed, you can install CrateToM3U by simply entering:
+
+`brew install martinhh/beta/cratetom3u`
+
+(Sorry, no simple solution for Windows at the moment.)
+
 
 ## Usage
 
@@ -60,3 +68,5 @@ MyMachine:~ myuser$ cratetom3u -a / ~/Music/_Serato_/Crates/ ~/CrateM3Us/
 On a Mac with Serato installed to its default location, the above
 command should create working `.m3u` files that can be used with VLC,
 Itunes etc.
+
+**For more details and examples: have a look at the [wiki](https://github.com/MartinHH/CrateToM3U/wiki).**
