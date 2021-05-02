@@ -74,8 +74,12 @@ object CrateToM3U {
     if (size <= 0) Failure(EmptyAudioFileList) else Success(size)
   }
 
-  private def resultString(result: Try[(Int, Boolean)], in: String, out: String,
-                           charSet: Option[String]): String = result match {
+  private def resultString(
+    result: Try[(Int, Boolean)],
+    in: String,
+    out: String,
+    charSet: Option[String]
+  ): String = result match {
     case Success((x, false)) =>
       s"Wrote $x tracks to $out"
     case Success((x, true)) =>
@@ -90,8 +94,13 @@ object CrateToM3U {
   }
 
   /** Combines crate-extraction and m3u-writing wrapped in [[Try]]s and prints a result line. */
-  private def convertFile(extract: String => List[String], writeToFile: (String, List[String]) => Boolean,
-                          in: String, out: String, charSetName: Option[String]): Unit = {
+  private def convertFile(
+    extract: String => List[String],
+    writeToFile: (String, List[String]) => Boolean,
+    in: String,
+    out: String,
+    charSetName: Option[String]
+  ): Unit = {
     val result = for {
       audioPaths <- Try(extract(in))
       nFiles <- requireNonEmptyFileSize(audioPaths)
@@ -105,7 +114,7 @@ object CrateToM3U {
 
     val conf = Conf(args)
 
-    if(conf.fileMode) {
+    if (conf.fileMode) {
       convertFile(
         extract = CrateExtractor.audioFilePathsFromCrateFile,
         writeToFile = M3UBuilder.writeToFile(_, _, conf.m3uConfig),
@@ -131,6 +140,5 @@ object CrateToM3U {
           }
       }
     }
-
   }
 }

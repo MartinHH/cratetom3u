@@ -44,10 +44,10 @@ object CrateExtractor {
       new java.lang.String(bytesOfFile, i, size, StandardCharsets.UTF_16)
     }
 
-    while(i < bytesLength - StartMarkerFullLength) {
+    while (i < bytesLength - StartMarkerFullLength) {
 
       // search for a startMarker:
-      if(hasEqualBytesAt(i, bytesOfFile, StartMarker)) {
+      if (hasEqualBytesAt(i, bytesOfFile, StartMarker)) {
         // skip marker
         i += StartMarker.length
 
@@ -56,10 +56,10 @@ object CrateExtractor {
 
         i += PathLengthOffset
 
-        if(pathSize > 10000 || pathSize <= 0)
+        if (pathSize > 10000 || pathSize <= 0)
           throw CrateExtractionError(s"Unexpected path size (pathSize=$pathSize)")
 
-        if(i + pathSize > bytesLength)
+        if (i + pathSize > bytesLength)
           throw CrateExtractionError(s"Path size out of bounds (pathSize=$pathSize, bytesLength=$bytesLength, idx=$i)")
 
         // add audio file path to results:
@@ -82,7 +82,7 @@ object CrateExtractor {
       string.matches(CrateFileRegex) && matchRegex.fold(true)(string.matches)
 
     val file = new File(parentDir)
-    if(file.exists() && file.isDirectory) {
+    if (file.exists() && file.isDirectory) {
       val crateFiles = file.listFiles.collect {
         case f if !f.isDirectory && matches(f.getName) => f.getName
       }

@@ -17,17 +17,29 @@ object M3UBuilder {
     * @param charSetName    Optional name of the charset to be used for writing the m3u file.
     * @param backslash      If true, all '/'s in audio file paths will be replaced b '\'s.
     */
-  case class M3UConfig(remove: Option[String], prepend: Option[String], charSetName: Option[String], backslash: Boolean)
+  case class M3UConfig(
+    remove: Option[String],
+    prepend: Option[String],
+    charSetName: Option[String],
+    backslash: Boolean
+  )
 
-  def writeToFile(path: String, audioFilePaths: Iterable[String],
-                  config: M3UConfig): Boolean = {
+  def writeToFile(
+    path: String,
+    audioFilePaths: Iterable[String],
+    config: M3UConfig
+  ): Boolean = {
     writeToFile(new File(path), audioFilePaths, config)
   }
 
-  def writeToFile(dir: String, name: String, audioFilePaths: Iterable[String],
-                  config: M3UConfig): Boolean = {
+  def writeToFile(
+    dir: String,
+    name: String,
+    audioFilePaths: Iterable[String],
+    config: M3UConfig
+  ): Boolean = {
     val dirFile = new File(dir)
-    if(!dirFile.exists())
+    if (!dirFile.exists())
       dirFile.mkdir()
     writeToFile(new File(dir, name), audioFilePaths, config)
   }
@@ -42,8 +54,11 @@ object M3UBuilder {
     * @return               True if there was an error during file-writing. (This is the
     *                       error flag of the underlying [[java.io.PrintWriter]].)
     */
-  def writeToFile(file: File, audioFilePaths: Iterable[String],
-                  config: M3UConfig): Boolean = {
+  def writeToFile(
+    file: File,
+    audioFilePaths: Iterable[String],
+    config: M3UConfig
+  ): Boolean = {
 
     import java.io._
     import config._
@@ -54,12 +69,11 @@ object M3UBuilder {
     audioFilePaths.foreach { audioFilePath =>
       val removed = remove.fold(audioFilePath)(r => audioFilePath.replaceFirst(r, ""))
       val prepended = prepend.fold(removed)(_ + removed)
-      val backslashed = if(config.backslash) prepended.replace('/', '\\') else prepended
+      val backslashed = if (config.backslash) prepended.replace('/', '\\') else prepended
       pw.println(backslashed)
     }
 
     pw.close()
     pw.checkError()
-
   }
 }
