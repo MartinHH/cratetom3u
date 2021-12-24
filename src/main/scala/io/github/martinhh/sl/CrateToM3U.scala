@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException
 
 import io.github.martinhh.sl.CrateExtractor.CrateExtractionError
 import io.github.martinhh.sl.M3UBuilder.M3UConfig
-import org.rogach.scallop.{ScallopConf, ScallopOption}
+import org.rogach.scallop.*
 
 import scala.util.{Failure, Success, Try}
 

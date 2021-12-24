@@ -60,8 +60,8 @@ object M3UBuilder {
     config: M3UConfig
   ): Boolean = {
 
-    import java.io._
-    import config._
+    import java.io.*
+    import config.*
     val pw = charSetName.fold(new PrintWriter(file))(new PrintWriter(file, _))
 
     pw.println(HeaderString)
