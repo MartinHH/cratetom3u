@@ -8,7 +8,7 @@ object CrateExtractorSuite {
 
 class CrateExtractorSuite extends AnyFunSuite {
 
-  import CrateExtractorSuite._
+  import CrateExtractorSuite.*
 
   test("extracting 2SongTestCrate.crate should return the two contained paths") {
     val filePath = getClass.getResource("/testcrates/2SongTestCrate.crate").getFile

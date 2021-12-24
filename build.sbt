@@ -5,17 +5,18 @@ organization := "io.github.martinhh"
 
 version := "0.2.3"
 
-scalaVersion := "2.13.5"
+scalaVersion := "3.1.0"
 
-libraryDependencies += "org.rogach" %% "scallop" % "4.0.2"
+libraryDependencies += "org.rogach" %% "scallop" % "4.1.0"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.7" % "test"
-libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.7" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.9" % "test"
 
 scalacOptions ++= Seq(
   "-deprecation",
-  "-Xfatal-warnings",
-  "-Wunused:imports"
+  // TODO: reactivate if this ever gets supported by scala 3
+  // "-Wunused:imports",
+  "-Xfatal-warnings"
 )
 
 enablePlugins(JavaAppPackaging)
