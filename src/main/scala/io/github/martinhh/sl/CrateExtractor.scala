@@ -7,7 +7,7 @@ import java.nio.file.{Files, Path, Paths}
 
 
 /**
-  * Extracts the audio file paths from a Serato .crate file.
+  * Extracts the audio file paths from Serato .crate files.
   */
 object CrateExtractor {
 
@@ -32,6 +32,11 @@ object CrateExtractor {
     audioFilePathsFromCrateFile(Paths.get(pathToCrateFile))
   }
 
+  /**
+    * Extracts a list of all audio file paths that are referenced in the given `.crate` file.
+    *
+    * @param pathToCrateFile Path to a `.crate` file.
+    */
   def audioFilePathsFromCrateFile(pathToCrateFile: Path): List[String] = {
     val bytesOfFile = Files.readAllBytes(pathToCrateFile)
     val bytesLength = bytesOfFile.length
@@ -52,7 +57,7 @@ object CrateExtractor {
         i += StartMarker.length
 
         // the next 4 bytes indicate the length of the audio file path
-        val pathSize = ByteBuffer.wrap(bytesOfFile, i, 4).getInt
+        val pathSize = ByteBuffer.wrap(bytesOfFile, i, PathLengthOffset).getInt
 
         i += PathLengthOffset
 
@@ -77,9 +82,15 @@ object CrateExtractor {
   val CrateSuffixRegex = """\.[cC][rR][aA][tT][eE]$"""
   val CrateFileRegex = s""".*$CrateSuffixRegex"""
 
+  /**
+    * Extracts all files with `.crate`-suffix from the given directory (that match the given regex).
+    *
+    * @param parentDir  Path to the directory that contains the `.crate`-files.
+    * @param matchRegex An optional regex that allows filtering for files with a specific name.
+    */
   def getCrateFiles(parentDir: String, matchRegex: Option[String]): Array[String] = {
     def matches(string: String): Boolean =
-      string.matches(CrateFileRegex) && matchRegex.fold(true)(string.matches)
+      string.matches(CrateFileRegex) && matchRegex.forall(string.matches)
 
     val file = new File(parentDir)
     if (file.exists() && file.isDirectory) {
@@ -92,6 +103,7 @@ object CrateExtractor {
     }
   }
 
+  /** Returns the given filename without `.crate`-suffix. */
   def getSimpleNameWithoutCrateSuffix(file: String): String = {
     new File(file).getName.replaceAll(CrateSuffixRegex, "")
   }

@@ -2,7 +2,9 @@ package io.github.martinhh.sl
 
 import java.io.File
 
-
+/**
+  * Writes `.m3u`-files (based on the raw audio file paths extracted by `CrateExtractor`).
+  */
 object M3UBuilder {
 
   private val HeaderString = "#EXTM3U"
