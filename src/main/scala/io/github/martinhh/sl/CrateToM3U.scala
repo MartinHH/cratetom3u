@@ -8,7 +8,12 @@ import org.rogach.scallop.*
 
 import scala.util.{Failure, Success, Try}
 
-
+/**
+  * The main application.
+  *
+  * Parses command line arguments, then extracts file paths from `.crate`-files using the `CrateExtractor` and writes
+  * them to `.m3u`-files using `M3UBuilder`.
+  */
 object CrateToM3U {
 
   private val ApplicationName = io.github.martinhh.sl.BuildInfo.name.toLowerCase
@@ -115,6 +120,7 @@ object CrateToM3U {
     val conf = Conf(args)
 
     if (conf.fileMode) {
+      // convert a single file
       convertFile(
         extract = CrateExtractor.audioFilePathsFromCrateFile,
         writeToFile = M3UBuilder.writeToFile(_, _, conf.m3uConfig),
@@ -123,6 +129,7 @@ object CrateToM3U {
         conf.m3uConfig.charSetName
       )
     } else {
+      // convert all .crate files within the given dir (that match the optional regex)
       Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
         case Success(files) if files.isEmpty =>
           println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
