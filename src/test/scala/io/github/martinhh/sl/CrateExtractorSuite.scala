@@ -2,11 +2,10 @@ package io.github.martinhh.sl
 
 import org.scalatest.funsuite.AnyFunSuite
 
-object CrateExtractorSuite {
+object CrateExtractorSuite:
   val NumberOfCrateFilesInTestCratesDir = 1
-}
 
-class CrateExtractorSuite extends AnyFunSuite {
+class CrateExtractorSuite extends AnyFunSuite:
 
   import CrateExtractorSuite.*
 
@@ -51,4 +50,3 @@ class CrateExtractorSuite extends AnyFunSuite {
     val input = "/someDir/.crateDir/MyCrate.foo"
     assert(!input.matches(CrateExtractor.CrateFileRegex))
   }
-}

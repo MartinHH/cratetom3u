@@ -5,7 +5,7 @@ import java.io.File
 /**
   * Writes `.m3u`-files (based on the raw audio file paths extracted by `CrateExtractor`).
   */
-object M3UBuilder {
+object M3UBuilder:
 
   private val HeaderString = "#EXTM3U"
 
@@ -30,21 +30,19 @@ object M3UBuilder {
     path: String,
     audioFilePaths: Iterable[String],
     config: M3UConfig
-  ): Boolean = {
+  ): Boolean =
     writeToFile(new File(path), audioFilePaths, config)
-  }
 
   def writeToFile(
     dir: String,
     name: String,
     audioFilePaths: Iterable[String],
     config: M3UConfig
-  ): Boolean = {
+  ): Boolean =
     val dirFile = new File(dir)
     if (!dirFile.exists())
       dirFile.mkdir()
     writeToFile(new File(dir, name), audioFilePaths, config)
-  }
 
   /**
     * Creates an m3u file.
@@ -60,7 +58,7 @@ object M3UBuilder {
     file: File,
     audioFilePaths: Iterable[String],
     config: M3UConfig
-  ): Boolean = {
+  ): Boolean =
 
     import java.io.*
     import config.*
@@ -77,5 +75,4 @@ object M3UBuilder {
 
     pw.close()
     pw.checkError()
-  }
-}
+  end writeToFile

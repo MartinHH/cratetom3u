@@ -14,40 +14,40 @@ import scala.util.{Failure, Success, Try}
   * Parses command line arguments, then extracts file paths from `.crate`-files using the `CrateExtractor` and writes
   * them to `.m3u`-files using `M3UBuilder`.
   */
-object CrateToM3U {
+object CrateToM3U:
 
   private val ApplicationName = io.github.martinhh.sl.BuildInfo.name.toLowerCase
   private val Version = io.github.martinhh.sl.BuildInfo.version
 
   /** Command line args parser config. */
-  case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList) {
+  case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList):
 
     version(s"$ApplicationName $Version")
 
     banner(
       s"""$ApplicationName is a tool to convert Serato .crate files to .m3u playlist files.
-        |(Please note that "smart crates" are not supported.)
-        |
-        |Usage:
-        |cratetom3u [options] inputpath outputpath
-        |
-        |Options:
-        |""".stripMargin
+         |(Please note that "smart crates" are not supported.)
+         |
+         |Usage:
+         |cratetom3u [options] inputpath outputpath
+         |
+         |Options:
+         |""".stripMargin
     )
 
     private val irrelevantForFile = " - irrelevant in single file mode"
 
     val inputPath: ScallopOption[String] = trailArg[String](name = "inputPath",
-        descr = "Path to input crates directory (or .crate file in single file mode)", required = true)
+      descr = "Path to input crates directory (or .crate file in single file mode)", required = true)
     val outputPath: ScallopOption[String] = trailArg[String](name = "outputPath",
-        descr = "Path to output directory (or .m3u file in single file mode)", required = true)
+      descr = "Path to output directory (or .m3u file in single file mode)", required = true)
 
     val remove: ScallopOption[String] = opt[String](name = "remove", short = 'r',
       descr = "Audio file path substring to remove (supports regex)", argName = "expression")
     val add: ScallopOption[String] = opt[String](name = "add", short = 'a',
       descr = "Audio file path prefix to prepend", argName = "prefix")
     val charSet: ScallopOption[String] = opt[String](name = "charset", short = 'c',
-        descr = "Charset for the output files (default is your system's default)", argName = "charset")
+      descr = "Charset for the output files (default is your system's default)", argName = "charset")
     val matches: ScallopOption[String] = opt[String](name = "matches", short = 'm',
       descr = s"String that extracted .crate files must match (supports regex)$irrelevantForFile",
       argName = "expression")
@@ -69,15 +69,14 @@ object CrateToM3U {
 
     val m3uConfig: M3UConfig =
       M3UConfig(remove.toOption, add.toOption, charSet.toOption, backslash.toOption.getOrElse(false))
-  }
+  end Conf
 
   case object EmptyAudioFileList extends Throwable
 
   /** If no audio tracks were found in input, something is probably wrong. */
-  private def requireNonEmptyFileSize(audioFilePaths: Iterable[String]): Try[Int] = {
+  private def requireNonEmptyFileSize(audioFilePaths: Iterable[String]): Try[Int] =
     val size = audioFilePaths.size
     if (size <= 0) Failure(EmptyAudioFileList) else Success(size)
-  }
 
   private def resultString(
     result: Try[(Int, Boolean)],
@@ -105,7 +104,7 @@ object CrateToM3U {
     in: String,
     out: String,
     charSetName: Option[String]
-  ): Unit = {
+  ): Unit =
     val result = for {
       audioPaths <- Try(extract(in))
       nFiles <- requireNonEmptyFileSize(audioPaths)
@@ -113,9 +112,9 @@ object CrateToM3U {
     } yield (nFiles, hasError)
 
     println(s"[$ApplicationName]: ${resultString(result, in, out, charSetName)}")
-  }
+  end convertFile
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit =
 
     val conf = Conf(args)
 
@@ -130,7 +129,7 @@ object CrateToM3U {
       )
     } else {
       // convert all .crate files within the given dir (that match the optional regex)
-      Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match {
+      Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match
         case Success(files) if files.isEmpty =>
           println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
         case Failure(e) =>
@@ -145,7 +144,5 @@ object CrateToM3U {
               conf.m3uConfig.charSetName
             )
           }
-      }
     }
-  }
-}
+  end main
