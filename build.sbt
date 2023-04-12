@@ -5,12 +5,12 @@ organization := "io.github.martinhh"
 
 version := "0.2.3"
 
-scalaVersion := "3.1.0"
+scalaVersion := "3.2.2"
 
 libraryDependencies += "org.rogach" %% "scallop" % "4.1.0"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
-libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.9" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.15" % "test"
 
 scalacOptions ++= Seq(
   "-deprecation",
