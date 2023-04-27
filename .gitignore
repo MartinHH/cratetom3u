@@ -6,3 +6,5 @@ project/boot/
 .cache
 .DS_Store
 .idea/
+.scala-build/
+.bsp/

@@ -16,16 +16,15 @@ import scala.util.{Failure, Success, Try}
   */
 object CrateToM3U:
 
-  private val ApplicationName = io.github.martinhh.sl.BuildInfo.name.toLowerCase
-  private val Version = io.github.martinhh.sl.BuildInfo.version
+  import ProjectDefs.*
 
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList):
 
-    version(s"$ApplicationName $Version")
+    version(s"$BinaryName $Version")
 
     banner(
-      s"""$ApplicationName is a tool to convert Serato .crate files to .m3u playlist files.
+      s"""$BinaryName is a tool to convert Serato .crate files to .m3u playlist files.
          |(Please note that "smart crates" are not supported.)
          |
          |Usage:
@@ -59,7 +58,7 @@ object CrateToM3U:
     private val _fileMode: ScallopOption[Boolean] = opt[Boolean](name = "filemode", short = 'f',
       descr = "Enable single file mode")
 
-    printedName = ApplicationName
+    printedName = BinaryName
 
     verify()
 
@@ -111,7 +110,7 @@ object CrateToM3U:
       hasError <- Try(writeToFile(out, audioPaths))
     } yield (nFiles, hasError)
 
-    println(s"[$ApplicationName]: ${resultString(result, in, out, charSetName)}")
+    println(s"[$BinaryName]: ${resultString(result, in, out, charSetName)}")
   end convertFile
 
   def main(args: Array[String]): Unit =
@@ -131,9 +130,9 @@ object CrateToM3U:
       // convert all .crate files within the given dir (that match the optional regex)
       Try(CrateExtractor.getCrateFiles(conf.inputPath(), conf.matches.toOption)) match
         case Success(files) if files.isEmpty =>
-          println(s"[$ApplicationName]: no .crate files found in ${conf.inputPath()}")
+          println(s"[$BinaryName]: no .crate files found in ${conf.inputPath()}")
         case Failure(e) =>
-          println(s"[$ApplicationName]: Error: $e")
+          println(s"[$BinaryName]: Error: $e")
         case Success(files) =>
           files.foreach { crateFile =>
             convertFile(
