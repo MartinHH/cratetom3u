@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  test:
+    runs-on: ${{ matrix.OS }}
+    strategy:
+      matrix:
+        OS: [ "macos-12", "windows-2022" ]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v0.2
+      - run: scala-cli --power test .

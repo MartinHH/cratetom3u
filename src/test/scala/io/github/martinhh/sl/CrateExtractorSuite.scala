@@ -9,29 +9,29 @@ class CrateExtractorSuite extends AnyFunSuite:
 
   import CrateExtractorSuite.*
 
+  // Note: these tests assume to be executed from the project root dir (otherwise, they will fail)
+  val TestCratesDirPath = "./src/test/resources/testcrates"
+
   test("extracting 2SongTestCrate.crate should return the two contained paths") {
-    val filePath = getClass.getResource("/testcrates/2SongTestCrate.crate").getFile
-    val extractedAudioPaths = CrateExtractor.audioFilePathsFromCrateFile(filePath)
+    val extractedAudioPaths =
+      CrateExtractor.audioFilePathsFromCrateFile(s"$TestCratesDirPath/2SongTestCrate.crate")
     assertResult(2)(extractedAudioPaths.size)
     assertResult("my music/genre a/Artist X/03 - Some Song.mp3")(extractedAudioPaths.head)
     assertResult("my music/genre b/artist y/Thät Söng With Thöse Germän Letters.wav")(extractedAudioPaths(1))
   }
 
   test("getCrateFiles should not return non-\".crate\"-files") {
-    val dirPath = getClass.getResource("/testcrates").getFile
-    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = None)
+    val extractedCratePaths = CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = None)
     assertResult(NumberOfCrateFilesInTestCratesDir)(extractedCratePaths.length)
   }
 
   test("getCrateFiles with regex should not return non-matching \".crate\"-files") {
-    val dirPath = getClass.getResource("/testcrates").getFile
-    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = Some(""".*foo.*"""))
+    val extractedCratePaths = CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*foo.*"""))
     assertResult(0)(extractedCratePaths.length)
   }
 
   test("getCrateFiles with regex should return matching \".crate\"-files") {
-    val dirPath = getClass.getResource("/testcrates").getFile
-    val extractedCratePaths = CrateExtractor.getCrateFiles(dirPath, matchRegex = Some(""".*2So.*Test.*"""))
+    val extractedCratePaths = CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*2So.*Test.*"""))
     assertResult(1)(extractedCratePaths.length)
   }
 
