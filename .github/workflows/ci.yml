@@ -5,7 +5,7 @@ on:
       - main
   pull_request:
 jobs:
-  test:
+  build:
     runs-on: ${{ matrix.OS }}
     strategy:
       matrix:
@@ -16,7 +16,15 @@ jobs:
           fetch-depth: 0
       - uses: coursier/cache-action@v6
       - uses: VirtusLab/scala-cli-setup@v0.2
-      - run: scala-cli --power test .
+      - name: Unit tests
+        run: scala-cli --power test .
+      - name: Package app
+        run: scala-cli .github/scripts/package.sc
+      - uses: actions/upload-artifact@v3
+        with:
+          name: launchers
+          path: artifacts
+          if-no-files-found: error
   format:
     runs-on: "ubuntu-latest"
     steps:
