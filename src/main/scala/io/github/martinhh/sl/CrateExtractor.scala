@@ -5,10 +5,9 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, Paths}
 
-
 /**
-  * Extracts the audio file paths from Serato .crate files.
-  */
+ * Extracts the audio file paths from Serato .crate files.
+ */
 object CrateExtractor:
 
   case class CrateExtractionError(msg: String) extends Throwable
@@ -30,10 +29,10 @@ object CrateExtractor:
     audioFilePathsFromCrateFile(Paths.get(pathToCrateFile))
 
   /**
-    * Extracts a list of all audio file paths that are referenced in the given `.crate` file.
-    *
-    * @param pathToCrateFile Path to a `.crate` file.
-    */
+   * Extracts a list of all audio file paths that are referenced in the given `.crate` file.
+   *
+   * @param pathToCrateFile Path to a `.crate` file.
+   */
   def audioFilePathsFromCrateFile(pathToCrateFile: Path): List[String] =
     val bytesOfFile = Files.readAllBytes(pathToCrateFile)
     val bytesLength = bytesOfFile.length
@@ -61,7 +60,9 @@ object CrateExtractor:
           throw CrateExtractionError(s"Unexpected path size (pathSize=$pathSize)")
 
         if (i + pathSize > bytesLength)
-          throw CrateExtractionError(s"Path size out of bounds (pathSize=$pathSize, bytesLength=$bytesLength, idx=$i)")
+          throw CrateExtractionError(
+            s"Path size out of bounds (pathSize=$pathSize, bytesLength=$bytesLength, idx=$i)"
+          )
 
         // add audio file path to results:
         results ::= bytesToString(pathSize)
@@ -79,11 +80,11 @@ object CrateExtractor:
   val CrateFileRegex = s""".*$CrateSuffixRegex"""
 
   /**
-    * Extracts all files with `.crate`-suffix from the given directory (that match the given regex).
-    *
-    * @param parentDir  Path to the directory that contains the `.crate`-files.
-    * @param matchRegex An optional regex that allows filtering for files with a specific name.
-    */
+   * Extracts all files with `.crate`-suffix from the given directory (that match the given regex).
+   *
+   * @param parentDir  Path to the directory that contains the `.crate`-files.
+   * @param matchRegex An optional regex that allows filtering for files with a specific name.
+   */
   def getCrateFiles(parentDir: String, matchRegex: Option[String]): Array[String] =
     def matches(string: String): Boolean =
       string.matches(CrateFileRegex) && matchRegex.forall(string.matches)
@@ -98,7 +99,6 @@ object CrateExtractor:
       Array.empty
     }
   end getCrateFiles
-
 
   /** Returns the given filename without `.crate`-suffix. */
   def getSimpleNameWithoutCrateSuffix(file: String): String =
