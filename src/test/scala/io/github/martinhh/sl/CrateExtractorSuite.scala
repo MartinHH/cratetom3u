@@ -17,7 +17,9 @@ class CrateExtractorSuite extends AnyFunSuite:
       CrateExtractor.audioFilePathsFromCrateFile(s"$TestCratesDirPath/2SongTestCrate.crate")
     assertResult(2)(extractedAudioPaths.size)
     assertResult("my music/genre a/Artist X/03 - Some Song.mp3")(extractedAudioPaths.head)
-    assertResult("my music/genre b/artist y/Thät Söng With Thöse Germän Letters.wav")(extractedAudioPaths(1))
+    assertResult("my music/genre b/artist y/Thät Söng With Thöse Germän Letters.wav")(
+      extractedAudioPaths(1)
+    )
   }
 
   test("getCrateFiles should not return non-\".crate\"-files") {
@@ -26,12 +28,14 @@ class CrateExtractorSuite extends AnyFunSuite:
   }
 
   test("getCrateFiles with regex should not return non-matching \".crate\"-files") {
-    val extractedCratePaths = CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*foo.*"""))
+    val extractedCratePaths =
+      CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*foo.*"""))
     assertResult(0)(extractedCratePaths.length)
   }
 
   test("getCrateFiles with regex should return matching \".crate\"-files") {
-    val extractedCratePaths = CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*2So.*Test.*"""))
+    val extractedCratePaths =
+      CrateExtractor.getCrateFiles(TestCratesDirPath, matchRegex = Some(""".*2So.*Test.*"""))
     assertResult(1)(extractedCratePaths.length)
   }
 

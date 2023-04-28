@@ -17,3 +17,18 @@ jobs:
       - uses: coursier/cache-action@v6
       - uses: VirtusLab/scala-cli-setup@v0.2
       - run: scala-cli --power test .
+  format:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v0.2
+      - name: Scalafmt check
+        run: |
+          scala-cli fmt --check . || (
+            echo "To format code run"
+            echo "  scala-cli fmt ."
+            exit 1
+          )
