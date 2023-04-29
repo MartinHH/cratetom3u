@@ -24,7 +24,18 @@ os.proc(
   "--version",
   Version,
   "--native-image"
-).call(cwd = os.pwd)
+).call(cwd = os.pwd, stdout = os.Inherit)
+  .out
+  .text()
+  .trim
+
+// test the generated executable with a test-.crate-file
+os.proc(
+  destPath,
+  "-f",
+  os.Path("src", os.pwd) / "test" / "resources" / "testcrates" / "2SongTestCrate.crate",
+  targetDirPath / "testoutput.m3u"
+).call(cwd = os.pwd, stdout = os.Inherit)
   .out
   .text()
   .trim
