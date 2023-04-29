@@ -10,6 +10,11 @@ jobs:
     strategy:
       matrix:
         OS: [ "macos-12", "windows-2022" ]
+        include:
+          - suffix: "mac"
+            OS: "macos-12"
+          - suffix: "win"
+            OS: "windows-2022"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,7 +27,7 @@ jobs:
         run: scala-cli .github/scripts/package.sc
       - uses: actions/upload-artifact@v3
         with:
-          name: launchers
+          name: launchers-${{ matrix.suffix }}
           path: artifacts
           if-no-files-found: error
   format:

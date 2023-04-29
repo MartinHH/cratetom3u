@@ -5,13 +5,7 @@ import scala.util.Properties
 
 import io.github.martinhh.sl.ProjectDefs.*
 
-val platformString: String = {
-  if (Properties.isWin) "windows"
-  else if (Properties.isLinux) "linux"
-  else if (Properties.isMac) "mac"
-  else "unknown"
-}
-val targetDirPath = os.Path("artifacts", os.pwd) / platformString
+val targetDirPath = os.Path("artifacts", os.pwd) / BinaryName
 val destPath = {
   val binName = if (Properties.isWin) s"$BinaryName.exe" else BinaryName
   targetDirPath / binName
