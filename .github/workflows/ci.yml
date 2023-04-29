@@ -27,8 +27,13 @@ jobs:
         run: scala-cli .github/scripts/package.sc
       - uses: actions/upload-artifact@v3
         with:
-          name: launchers-${{ matrix.suffix }}
-          path: artifacts
+          name: cratetom3u-${{ matrix.suffix }}
+          path: executable
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v3
+        with:
+          name: reports-${{ matrix.suffix }}
+          path: target
           if-no-files-found: error
   format:
     runs-on: "ubuntu-latest"

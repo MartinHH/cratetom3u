@@ -5,15 +5,15 @@ import scala.util.Properties
 
 import io.github.martinhh.sl.ProjectDefs.*
 
-val targetDirPath = os.Path("artifacts", os.pwd) / BinaryName
+val workDirPath = os.Path("target", os.pwd)
+val binName = if (Properties.isWin) s"$BinaryName.exe" else BinaryName
 val destPath = {
-  val binName = if (Properties.isWin) s"$BinaryName.exe" else BinaryName
-  targetDirPath / binName
+  workDirPath / binName
 }
 val scalaCLILauncher =
   if (Properties.isWin) "scala-cli.bat" else "scala-cli"
 
-os.makeDir.all(targetDirPath)
+os.makeDir.all(workDirPath)
 os.proc(
   scalaCLILauncher,
   "--power",
@@ -36,8 +36,12 @@ os.proc(
   "-c",
   "UTF-8",
   os.Path("src", os.pwd) / "test" / "resources" / "testcrates" / "2SongTestCrate.crate",
-  targetDirPath / "testoutput.m3u"
+  workDirPath / "testoutput.m3u"
 ).call(cwd = os.pwd, stdout = os.Inherit)
   .out
   .text()
   .trim
+
+val releaseDirPath = os.Path("executable", os.pwd) / BinaryName
+os.makeDir.all(releaseDirPath)
+os.move(destPath, releaseDirPath / binName)
