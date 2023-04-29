@@ -33,6 +33,8 @@ os.proc(
 os.proc(
   destPath,
   "-f",
+  "-c",
+  "UTF-8",
   os.Path("src", os.pwd) / "test" / "resources" / "testcrates" / "2SongTestCrate.crate",
   targetDirPath / "testoutput.m3u"
 ).call(cwd = os.pwd, stdout = os.Inherit)
