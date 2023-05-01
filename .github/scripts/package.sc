@@ -45,3 +45,7 @@ os.proc(
 val releaseDirPath = os.Path("executable", os.pwd) / BinaryName
 os.makeDir.all(releaseDirPath)
 os.move(destPath, releaseDirPath / binName)
+
+// bundle license files with binary
+os.copy.into(os.pwd / "LICENSE", releaseDirPath)
+os.copy(os.pwd / "doc" / "BINARY_NOTICE.md", releaseDirPath / "NOTICE.md")
