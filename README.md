@@ -22,7 +22,7 @@ Enter `cratetom3u --help` for a list of all options:
 
 ```
 MyMachine:~ myuser$ cratetom3u --help
-cratetom3u 0.2.3
+cratetom3u 0.2.4
 cratetom3u is a tool to convert .crate files to .m3u playlist files.
 (Please note that "smart crates" are not supported.)
 
