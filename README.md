@@ -1,4 +1,4 @@
-# CrateToM3U
+# cratetom3u
 
 A simple command-line tool to convert `.crate` files (created by
 [Serato](https://serato.com/) software like Serato DJ, Scratch Live or
@@ -8,7 +8,8 @@ Itch) to `.m3u` playlist files.
 
 ## Installation
 
-For those who just want to use this: if you're on a Mac and you have [Homebrew](https://brew.sh) installed, you can install CrateToM3U by simply entering:
+For those who just want to use this: if you're on a Mac and you have [Homebrew](https://brew.sh) installed, you can
+install cratetom3u by simply entering:
 
 `brew install martinhh/beta/cratetom3u`
 
@@ -21,8 +22,8 @@ Enter `cratetom3u --help` for a list of all options:
 
 ```
 MyMachine:~ myuser$ cratetom3u --help
-cratetom3u 0.2.1
-cratetom3u is a tool to convert Serato .crate files to .m3u playlist files.
+cratetom3u 0.2.3
+cratetom3u is a tool to convert .crate files to .m3u playlist files.
 (Please note that "smart crates" are not supported.)
 
 Options:
