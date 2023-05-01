@@ -5,9 +5,10 @@ import scala.util.Properties
 
 import io.github.martinhh.sl.ProjectDefs.*
 
-val workDirPath = os.Path("target", os.pwd)
+val targetDirPath = os.Path("target", os.pwd)
+val workDirPath = targetDirPath / "temp"
 val binName = if (Properties.isWin) s"$BinaryName.exe" else BinaryName
-val destPath = {
+val binOutputPath = {
   workDirPath / binName
 }
 val scalaCLILauncher =
@@ -20,7 +21,7 @@ os.proc(
   "package",
   ".",
   "-o",
-  destPath,
+  binOutputPath,
   "--version",
   Version,
   "--native-image"
@@ -31,7 +32,7 @@ os.proc(
 
 // test the generated executable with a test-.crate-file
 os.proc(
-  destPath,
+  binOutputPath,
   "-f",
   "-c",
   "UTF-8",
@@ -42,9 +43,9 @@ os.proc(
   .text()
   .trim
 
-val releaseDirPath = os.Path("executable", os.pwd) / BinaryName
+val releaseDirPath = targetDirPath / "executable" / BinaryName
 os.makeDir.all(releaseDirPath)
-os.move(destPath, releaseDirPath / binName)
+os.move(binOutputPath, releaseDirPath / binName)
 
 // bundle license files with binary
 os.copy.into(os.pwd / "LICENSE", releaseDirPath)

@@ -28,12 +28,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: cratetom3u-${{ matrix.suffix }}
-          path: executable
+          path: target/executable
           if-no-files-found: error
       - uses: actions/upload-artifact@v3
         with:
           name: reports-${{ matrix.suffix }}
-          path: target
+          path: target/temp
           if-no-files-found: error
   format:
     runs-on: "ubuntu-latest"
