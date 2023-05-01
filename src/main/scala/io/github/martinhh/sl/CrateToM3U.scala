@@ -24,7 +24,7 @@ object CrateToM3U:
     version(s"$BinaryName $Version")
 
     banner(
-      s"""$BinaryName is a tool to convert Serato .crate files to .m3u playlist files.
+      s"""$BinaryName is a tool to convert .crate files to .m3u playlist files.
          |(Please note that "smart crates" are not supported.)
          |
          |Usage:
