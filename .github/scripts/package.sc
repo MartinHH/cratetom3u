@@ -1,4 +1,4 @@
-//> using scala "3.2.2"
+//> using scala "3.3.1"
 //> using lib "com.lihaoyi::os-lib:0.9.1"
 //> using file "../../src/main/scala/io/github/martinhh/sl/ProjectDefs.scala"
 import scala.util.Properties
@@ -22,8 +22,6 @@ os.proc(
   ".",
   "-o",
   binOutputPath,
-  "--version",
-  Version,
   "--native-image"
 ).call(cwd = os.pwd, stdout = os.Inherit)
   .out
