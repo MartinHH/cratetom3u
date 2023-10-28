@@ -2,3 +2,5 @@
 //> using platform "jvm"
 //> using lib "org.rogach::scallop::4.1.0"
 //> using jvm "17"
+//> using buildInfo
+//> using computeVersion git:tag
