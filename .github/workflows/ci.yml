@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6
-      - uses: VirtusLab/scala-cli-setup@v0.2
+      - uses: VirtusLab/scala-cli-setup@v1.0.5
       - name: Unit tests
         run: scala-cli --power test .
       - name: Package app
@@ -42,7 +42,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6
-      - uses: VirtusLab/scala-cli-setup@v0.2
+      - uses: VirtusLab/scala-cli-setup@v1.0.5
       - name: Scalafmt check
         run: |
           scala-cli fmt --check . || (
