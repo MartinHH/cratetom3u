@@ -24,7 +24,7 @@ jobs:
       - name: Unit tests
         run: scala-cli --power test .
       - name: Package app
-        run: scala-cli .github/scripts/package.sc
+        run: scala-cli --power .github/scripts/package.sc
       - uses: actions/upload-artifact@v3
         with:
           name: cratetom3u-${{ matrix.suffix }}

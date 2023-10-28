@@ -6,6 +6,7 @@ import io.github.martinhh.sl.CrateExtractor.CrateExtractionError
 import io.github.martinhh.sl.M3UBuilder.M3UConfig
 import org.rogach.scallop.*
 
+import scala.cli.build.BuildInfo
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -21,7 +22,7 @@ object CrateToM3U:
   /** Command line args parser config. */
   case class Conf(rawArgs: Array[String]) extends ScallopConf(rawArgs.toList):
 
-    version(s"$BinaryName $Version")
+    version(s"$BinaryName ${BuildInfo.projectVersion.getOrElse("?.?.?")}")
 
     banner(
       s"""$BinaryName is a tool to convert .crate files to .m3u playlist files.
