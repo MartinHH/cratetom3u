@@ -9,10 +9,10 @@ jobs:
     runs-on: ${{ matrix.OS }}
     strategy:
       matrix:
-        OS: [ "macos-12", "windows-2022" ]
+        OS: [ "macos-14", "windows-2022" ]
         include:
           - suffix: "mac"
-            OS: "macos-12"
+            OS: "macos-14"
           - suffix: "win"
             OS: "windows-2022"
     steps:
