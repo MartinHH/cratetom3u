@@ -9,10 +9,10 @@ jobs:
     runs-on: ${{ matrix.OS }}
     strategy:
       matrix:
-        OS: [ "macos-12", "windows-2022" ]
+        OS: [ "macos-14", "windows-2022" ]
         include:
           - suffix: "mac"
-            OS: "macos-12"
+            OS: "macos-14"
           - suffix: "win"
             OS: "windows-2022"
     steps:
@@ -25,12 +25,12 @@ jobs:
         run: scala-cli --power test .
       - name: Package app
         run: scala-cli --power .github/scripts/package.sc
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: cratetom3u-${{ matrix.suffix }}
           path: target/executable
           if-no-files-found: error
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: reports-${{ matrix.suffix }}
           path: target/temp
