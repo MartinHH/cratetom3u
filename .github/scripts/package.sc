@@ -1,5 +1,5 @@
-//> using scala "3.3.1"
-//> using lib "com.lihaoyi::os-lib:0.9.1"
+//> using scala "3.3.5"
+//> using dep "com.lihaoyi::os-lib:0.11.4"
 //> using file "../../src/main/scala/io/github/martinhh/sl/ProjectDefs.scala"
 
 import io.github.martinhh.sl.ProjectDefs.BinaryName
